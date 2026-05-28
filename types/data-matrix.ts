@@ -1,4 +1,4 @@
-// types-matrix.ts
+// types/data-matrix.ts
 // Shared TypeScript contracts and master mock data for Advantage Teams
 
 export interface AgentPerformance {

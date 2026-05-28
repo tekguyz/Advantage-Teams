@@ -3,7 +3,7 @@
 'use client';
 
 import React, { Suspense } from 'react';
-import PageWorkspace from '../page-workspace';
+import PageWorkspace from '@/components/dashboard/page-workspace';
 
 export default function DashboardPage() {
   return (

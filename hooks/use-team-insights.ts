@@ -1,4 +1,4 @@
-// use-team-insights.ts
+// hooks/use-team-insights.ts
 // Custom React state hook handling sorting, filtering, and query state transitions.
 'use client';
 
@@ -9,8 +9,8 @@ import {
   ExtensionMapping, 
   MASTER_AGENTS, 
   DEFAULT_MAPPINGS 
-} from './types-matrix';
-import { ExtensionMapSchema } from './validation-schemas';
+} from '@/types/data-matrix';
+import { ExtensionMapSchema } from '@/validation-schemas';
 
 function sortedCollection<T>(list: T[], key: keyof T | string, order: string): T[] {
   if (!key) return list;

@@ -1,15 +1,15 @@
-// page-workspace.tsx
+// components/dashboard/page-workspace.tsx
 // Core light-mode Jira-themed workspace dashboard loader with native mutations
 'use client';
 
 import React, { Suspense } from 'react';
-import { useTeamInsights } from './use-team-insights';
-import { LayoutShell } from './layout-shell';
+import { useTeamInsights } from '@/hooks/use-team-insights';
+import { LayoutShell } from '@/components/dashboard/layout-shell';
 
-import ViewOverview from './view-overview';
-import ViewPerformance from './view-performance';
-import ViewSurveys from './view-surveys';
-import ViewSettings from './view-settings';
+import ViewOverview from '@/components/dashboard/view-overview';
+import ViewPerformance from '@/components/dashboard/view-performance';
+import ViewSurveys from '@/components/dashboard/view-surveys';
+import ViewSettings from '@/components/dashboard/view-settings';
 
 function WorkspaceContent() {
   const {
