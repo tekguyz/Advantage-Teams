@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #0052cc;
+  --color-brand-hover: #0747a6;
+  --color-background-surface: #ffffff;
+  --color-muted-surface: #f4f5f7;
+  --color-boundary-border: #dfe1e6;
+  --color-text-primary: #172b4d;
+  --color-text-muted: #5e6c84;
+}
+
+body {
+  background-color: var(--color-background-surface);
+  color: var(--color-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Scrollbar aesthetic - Confluence/Jira low-density workspace feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-muted-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-boundary-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}

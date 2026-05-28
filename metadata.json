@@ -1,0 +1,6 @@
+{
+  "name": "3CX Operations Telemetry SQL Toolkit",
+  "description": "An interactive database design playground, telemetry ingestion stream simulator, and high-performance Postgres SQL schema viewer with a deterministic AI-powered chronological timeline productivity correlator.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
