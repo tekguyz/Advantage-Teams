@@ -19,6 +19,7 @@ function WorkspaceContent() {
     sortBy,
     order,
     draftName,
+    draftExt,
     draftZoho,
     saveErrors,
     handleSort,
@@ -26,7 +27,6 @@ function WorkspaceContent() {
     commitExtensionMapping,
   } = useTeamInsights();
 
-  // Route sub-views dynamically based on query activeView state
   switch (activeView) {
     case 'overview':
       return (
@@ -62,6 +62,7 @@ function WorkspaceContent() {
         <ViewSettings
           mappings={mappings}
           draftName={draftName}
+          draftExt={draftExt}
           draftZoho={draftZoho}
           saveErrors={saveErrors}
           onModifyDraft={handleModifyDraft}

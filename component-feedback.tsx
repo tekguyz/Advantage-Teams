@@ -3,7 +3,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, CheckCircle, Info, AlertTriangle, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { X, CheckCircle, Info, AlertTriangle, ArrowUpDown, ArrowUp, ArrowDown, HelpCircle } from 'lucide-react';
 
 interface TooltipProps {
   content: string;
@@ -11,28 +11,30 @@ interface TooltipProps {
 }
 
 /**
- * Premium floating popup displaying explanatory guidelines for standard filter processes.
- * Explicitly bound to z-index layer z-40.
+ * Minimalist inline tooltip.
+ * Appends a small, minimal grey question mark inline with header text.
+ * Tooltip popup has explicit z-index z-50 to hover on top.
  */
 export function Tooltip({ content, children }: TooltipProps) {
   const [visible, setVisible] = useState(false);
 
   return (
     <span 
-      className="relative inline-block cursor-help select-none"
+      className="relative inline-flex items-center gap-1 cursor-help select-none"
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
       onFocus={() => setVisible(true)}
       onBlur={() => setVisible(false)}
     >
-      {children}
+      <span>{children}</span>
+      <HelpCircle className="w-3.5 h-3.5 text-[#97a0af] hover:text-[#5e6c84] shrink-0 inline-block transition-colors" />
       {visible && (
         <span 
           style={{ transform: 'translateX(-50%)' }}
-          className="absolute z-40 top-full mt-2 left-1/2 w-80 p-3 bg-white text-[#172b4d] text-[11.5px] font-normal leading-relaxed rounded-[3px] border border-[#dfe1e6] shadow-lg pointer-events-none transition-all duration-150 text-left"
+          className="absolute z-50 top-full mt-2 left-1/2 w-64 p-2 bg-[#172b4d] text-white text-[11px] font-medium leading-relaxed rounded-[3px] shadow-md pointer-events-none transition-all duration-150 text-left normal-case tracking-normal"
         >
           <span className="block">{content}</span>
-          <span className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-white" />
+          <span className="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-[#172b4d]" />
         </span>
       )}
     </span>
@@ -47,7 +49,6 @@ interface ToastProps {
 
 /**
  * Slide-in toast notification adhering with Jira Cloud's flag design component systems.
- * Explicitly bound to z-index layer z-50.
  */
 export function Toast({ message, type = 'success', onClose }: ToastProps) {
   useEffect(() => {
@@ -71,7 +72,7 @@ export function Toast({ message, type = 'success', onClose }: ToastProps) {
 
   return (
     <div 
-      className={`fixed bottom-5 right-5 z-50 max-w-sm bg-white border border-[#dfe1e6] rounded-[3px] shadow-lg p-3.5 flex items-start gap-3 transition-all duration-300 ease-out animate-[slideIn_0.3s_ease-out] ${borderStyles[type]}`}
+      className={`fixed bottom-5 right-5 z-50 max-w-sm bg-white border border-[#dfe1e6] rounded-[3px] shadow-lg p-3.5 flex items-start gap-3 transition-all duration-300 ease-out animate-fadeIn ${borderStyles[type]}`}
       role="alert"
     >
       <div className="mt-0.5">{icons[type]}</div>
@@ -95,7 +96,7 @@ interface SortArrowProps {
 }
 
 /**
- * Clean interactive micro-sorting icon for Jira-like tables.
+ * Clean interactive micro-sorting icon for tables.
  */
 export function SortArrow({ active, order }: SortArrowProps) {
   if (!active) {

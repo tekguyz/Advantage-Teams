@@ -32,7 +32,6 @@ function SidebarNav() {
   const activeView = searchParams.get('view') || 'overview';
 
   const handleNavigate = (view: string) => {
-    // Navigate with stable transition, retaining view parameter only
     router.push(`${pathname}?view=${view}`);
   };
 
@@ -48,13 +47,13 @@ function SidebarNav() {
       id="workspace-sidebar"
       className="h-screen w-[240px] flex-shrink-0 border-r border-[#dfe1e6] bg-[#f4f5f7] flex flex-col justify-between select-none"
     >
-      <div className="flex flex-col">
+      <div className="flex flex-col animate-fadeIn">
         {/* Brand Header block */}
         <div id="sidebar-header" className="h-[54px] px-4 flex items-center gap-3 border-b border-[#dfe1e6] bg-white">
           <BrandDiamondLogo />
           <div className="flex flex-col min-w-0">
             <span className="font-bold text-[#172b4d] text-[13.5px] tracking-tight leading-tight truncate">Advantage Teams</span>
-            <span className="text-[9.5px] text-[#5e6c84] leading-none font-bold tracking-wider uppercase">Workspace</span>
+            <span className="text-[9.5px] text-[#5e6c84] leading-none font-bold tracking-wider uppercase">Made by TEKGUYZ</span>
           </div>
         </div>
 
@@ -71,14 +70,14 @@ function SidebarNav() {
                 <button
                   key={item.value}
                   onClick={() => handleNavigate(item.value)}
-                  className={`flex items-center gap-3 h-[36px] px-4 text-[12.5px] transition-all border-l-[3px] text-left ${
+                  className={`flex items-center gap-3 h-[36px] px-4 text-[12.5px] transition-all border-l-[3px] text-left cursor-pointer ${
                     isActive
                       ? 'bg-[#ebecf0] text-[#0052cc] border-[#0052cc] font-bold'
                       : 'text-[#172b4d] hover:bg-[#ebecf0]/60 border-transparent hover:text-[#0052cc]'
                   }`}
                 >
                   <IconComponent className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#0052cc]' : 'text-[#5e6c84]'}`} />
-                  <span className="truncate">{item.label}</span>
+                  <span className="truncate font-medium">{item.label}</span>
                 </button>
               );
             })}
@@ -106,7 +105,6 @@ export function LayoutShell({ children }: LayoutShellProps) {
       id="advantage-teams-root" 
       className="h-screen w-screen overflow-hidden flex bg-white text-[#172b4d] font-sans selection:bg-[#0052cc]/10"
     >
-      {/* Sidebar locked permanently */}
       <Suspense fallback={<div className="h-screen w-[240px] flex-shrink-0 bg-[#f4f5f7] border-r border-[#dfe1e6]" />}>
         <SidebarNav />
       </Suspense>

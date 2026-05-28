@@ -1,5 +1,5 @@
 // validation-schemas.ts
-// Lightweight Zod runtime compilation validation rules for Advantage Teams
+// Lightweight Zod validation rules for Advantage Teams
 import { z } from 'zod';
 
 export const ExtensionMapSchema = z.object({

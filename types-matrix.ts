@@ -29,20 +29,24 @@ export interface ExtensionMapping {
   zohoUserId: string;
 }
 
-// Alias for backwards compatibility
-export interface ExtensionMap extends ExtensionMapping {}
+export interface CallEvent {
+  processed_at: string;
+  agent_extension: string;
+  customer_phone: string;
+  call_duration_seconds: number;
+  delivery_status: 'Sent' | 'Skipped: Under 2 Minutes' | 'Skipped: Daily Cap Hit';
+}
 
-// 12 full-time support agents from Sarah Jenkins to Lisa Judd
 export const MASTER_AGENTS: AgentPerformance[] = [
   {
     id: 'a101',
     name: 'Sarah Jenkins',
     extension: '101',
-    zohoId: 'US-101',
+    zohoId: 'ZO-8842-A',
     workStatus: 'Away from Phone',
     durationMins: 45,
     systemUpdates: 0,
-    focusRating: 12,
+    focusRating: 0,
     statusTag: 'Attention Needed',
     aiSummary: 'Inactive duration exceeds critical thresholds; 0 discrete updates logged.'
   },
@@ -50,23 +54,23 @@ export const MASTER_AGENTS: AgentPerformance[] = [
     id: 'a102',
     name: 'Marcus Vance',
     extension: '102',
-    zohoId: 'US-102',
+    zohoId: 'ZO-3329-D',
     workStatus: 'Ticket Work',
     durationMins: 15,
     systemUpdates: 14,
-    focusRating: 93,
-    statusTag: 'Verified',
-    aiSummary: 'Maintains tight compliance coverage. Logged 14 high-integrity updates.'
+    focusRating: 9,
+    statusTag: 'Attention Needed',
+    aiSummary: 'Maintains compliance coverage. Logged 14 high-integrity updates.'
   },
   {
     id: 'a103',
     name: 'Elena Rostova',
     extension: '103',
-    zohoId: 'US-103',
+    zohoId: 'ZO-7711-X',
     workStatus: 'Away from Phone',
     durationMins: 32,
     systemUpdates: 1,
-    focusRating: 18,
+    focusRating: 0,
     statusTag: 'Attention Needed',
     aiSummary: 'Idle duration check active with single database action. Flag set.'
   },
@@ -74,23 +78,23 @@ export const MASTER_AGENTS: AgentPerformance[] = [
     id: 'a104',
     name: 'David Kim',
     extension: '104',
-    zohoId: 'US-104',
+    zohoId: 'ZO-4910-K',
     workStatus: 'Ticket Work',
     durationMins: 20,
     systemUpdates: 9,
-    focusRating: 85,
-    statusTag: 'Verified',
+    focusRating: 5,
+    statusTag: 'Attention Needed',
     aiSummary: 'High-density updates observed. Mapped 9 system changes with 3CX active.'
   },
   {
     id: 'a105',
     name: 'Nolan Davies',
     extension: '105',
-    zohoId: 'US-105',
+    zohoId: 'ZO-1049-M',
     workStatus: 'Away from Phone',
     durationMins: 110,
     systemUpdates: 0,
-    focusRating: 5,
+    focusRating: 0,
     statusTag: 'Attention Needed',
     aiSummary: 'Extended away status logged. Attention needed due to session inactivity.'
   },
@@ -98,47 +102,47 @@ export const MASTER_AGENTS: AgentPerformance[] = [
     id: 'a106',
     name: 'Emily Watson',
     extension: '106',
-    zohoId: 'US-106',
+    zohoId: 'ZO-6622-Y',
     workStatus: 'Available',
     durationMins: 10,
     systemUpdates: 22,
-    focusRating: 98,
-    statusTag: 'Verified',
+    focusRating: 22,
+    statusTag: 'Attention Needed',
     aiSummary: 'Excellent performance. Fully compliant across all standard intervals.'
   },
   {
     id: 'a107',
     name: 'Jacob Miller',
     extension: '107',
-    zohoId: 'US-107',
+    zohoId: 'ZO-9011-L',
     workStatus: 'Ticket Work',
     durationMins: 18,
     systemUpdates: 12,
-    focusRating: 89,
-    statusTag: 'Verified',
+    focusRating: 7,
+    statusTag: 'Attention Needed',
     aiSummary: 'Consistently logged updates. Device health index verified green.'
   },
   {
     id: 'a108',
     name: 'Chloe Bennet',
     extension: '108',
-    zohoId: 'US-108',
+    zohoId: 'ZO-5544-H',
     workStatus: 'In Call',
     durationMins: 8,
     systemUpdates: 5,
-    focusRating: 91,
-    statusTag: 'Verified',
+    focusRating: 6,
+    statusTag: 'Attention Needed',
     aiSummary: 'Active live call handled. Survey dispatch pending completion.'
   },
   {
     id: 'a109',
     name: 'Adrian Peterson',
     extension: '109',
-    zohoId: 'US-109',
+    zohoId: 'ZO-4022-P',
     workStatus: 'DND',
     durationMins: 55,
     systemUpdates: 2,
-    focusRating: 25,
+    focusRating: 0,
     statusTag: 'Attention Needed',
     aiSummary: 'Unusual long-running DND state. Requires manager intervention.'
   },
@@ -146,11 +150,11 @@ export const MASTER_AGENTS: AgentPerformance[] = [
     id: 'a110',
     name: 'Clara Bow',
     extension: '110',
-    zohoId: 'US-110',
+    zohoId: 'ZO-3819-C',
     workStatus: 'Away from Phone',
     durationMins: 40,
     systemUpdates: 1,
-    focusRating: 14,
+    focusRating: 0,
     statusTag: 'Attention Needed',
     aiSummary: 'Device idle time threshold breached with insufficient keystroke activity.'
   },
@@ -158,24 +162,24 @@ export const MASTER_AGENTS: AgentPerformance[] = [
     id: 'a111',
     name: 'Victor Vance',
     extension: '111',
-    zohoId: 'US-111',
+    zohoId: 'ZO-2204-V',
     workStatus: 'Available',
     durationMins: 5,
     systemUpdates: 19,
-    focusRating: 95,
-    statusTag: 'Verified',
+    focusRating: 38,
+    statusTag: 'Attention Needed',
     aiSummary: 'Active system monitoring confirms baseline productivity targets met.'
   },
   {
     id: 'a112',
     name: 'Lisa Judd',
     extension: '112',
-    zohoId: 'US-112',
+    zohoId: 'ZO-4911-W',
     workStatus: 'Ticket Work',
     durationMins: 12,
     systemUpdates: 11,
-    focusRating: 90,
-    statusTag: 'Verified',
+    focusRating: 9,
+    statusTag: 'Attention Needed',
     aiSummary: 'Strong technical support performance. Commits logged across assignments.'
   }
 ];
@@ -212,3 +216,19 @@ export const DEFAULT_MAPPINGS: ExtensionMapping[] = MASTER_AGENTS.map(agent => (
   mappedName: agent.name,
   zohoUserId: agent.zohoId
 }));
+
+export function generateSimulationRecords(): CallEvent[] {
+  const extList = ['101', '102', '103', '104', '105', '106', '107', '108', '109', '110', '111', '112'];
+  const baseTime = new Date("2026-05-28T16:00:00Z").getTime();
+  return Array.from({ length: 300 }, (_, i) => {
+    // Generate predictable totals: Sent = 123, Skipped Short = 105, Duplicate = 72
+    const status = i < 123 ? 'Sent' : (i < 228 ? 'Skipped: Under 2 Minutes' : 'Skipped: Daily Cap Hit');
+    return {
+      processed_at: new Date(baseTime - i * 36000).toISOString(),
+      agent_extension: extList[i % 12],
+      customer_phone: `+1 (555) 019-${2200 + (i * 13) % 7700}`,
+      call_duration_seconds: status === 'Skipped: Under 2 Minutes' ? 10 + (i % 109) : 121 + (i % 400),
+      delivery_status: status as any
+    };
+  });
+}
