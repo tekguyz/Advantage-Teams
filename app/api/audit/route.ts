@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { IngestionDatabase } from '../../lib/db-store';
-import { GeminiTimelineService } from '../../gemini-service';
+import { IngestionDatabase } from '@/lib/db-store';
+import { GeminiTimelineService } from '@/utils/gemini-service';
 
 export const dynamic = 'force-dynamic';
 

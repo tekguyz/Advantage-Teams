@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { AgentProfile } from './types-ingestion';
+import { AgentProfile } from '@/types/types-ingestion';
 import { 
   Save, 
   HelpCircle, 

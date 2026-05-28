@@ -1,5 +1,5 @@
-import { IngestionDatabase } from './lib/db-store';
-import { PendingSurvey, AgentProfile } from './types-ingestion';
+import { IngestionDatabase } from '@/lib/db-store';
+import { PendingSurvey, AgentProfile } from '@/types/types-ingestion';
 
 export interface OutboundSurveyPayload {
   phoneNumber: string;

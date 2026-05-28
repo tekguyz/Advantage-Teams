@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { QueueMonitorTable } from './queue-monitor-table';
 import { ProfileMapperGrid } from './profile-mapper-grid';
-import { PendingSurvey, AgentProfile } from './types-ingestion';
+import { PendingSurvey, AgentProfile } from '@/types/types-ingestion';
 import { 
   Send, 
   CheckCircle2, 

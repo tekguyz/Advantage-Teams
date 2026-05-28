@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { executeBatchOutboundDispatch } from '../../batch-dispatcher';
+import { executeBatchOutboundDispatch } from '@/utils/batch-dispatcher';
 
 export const dynamic = 'force-dynamic';
 

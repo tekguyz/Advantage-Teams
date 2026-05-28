@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { IngestionDatabase } from '../../lib/db-store';
+import { IngestionDatabase } from '@/lib/db-store';
 
 export const dynamic = 'force-dynamic';
 

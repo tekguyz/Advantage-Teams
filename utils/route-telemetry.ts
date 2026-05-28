@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { TelemetryIngestSchema } from './types-ingestion';
-import { IngestionDatabase } from './lib/db-store';
+import { TelemetryIngestSchema } from '@/types/types-ingestion';
+import { IngestionDatabase } from '@/lib/db-store';
 
 export async function POST(req: NextRequest) {
   let rawBody: any = null;

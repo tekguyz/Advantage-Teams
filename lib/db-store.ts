@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { AgentProfile, TelemetryLog, ActivityLog, PendingSurvey } from '../types-ingestion';
+import { AgentProfile, TelemetryLog, ActivityLog, PendingSurvey } from '@/types/types-ingestion';
 
 // =============================================================================
 // INITIAL DETERMINISTIC SEED STATES

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CallIngestSchema } from './types-ingestion';
-import { IngestionDatabase } from './lib/db-store';
+import { CallIngestSchema } from '@/types/types-ingestion';
+import { IngestionDatabase } from '@/lib/db-store';
 
 export async function POST(req: NextRequest) {
   try {

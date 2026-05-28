@@ -4,7 +4,7 @@ import {
   AnalysedTimelineResult, 
   AnalysedTimelineResultSchema, 
   GeminiResponseSchemaConfig 
-} from './schema-verification';
+} from '@/utils/schema-verification';
 
 // =============================================================================
 // LAZY-LOADED STATE TO PREVENT CRASHING ON STARTUP IF GEMINI_API_KEY IS MISSING

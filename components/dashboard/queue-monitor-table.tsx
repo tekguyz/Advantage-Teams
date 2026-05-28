@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { PendingSurvey, AgentProfile } from './types-ingestion';
+import { PendingSurvey, AgentProfile } from '@/types/types-ingestion';
 import { 
   Clock, 
   Trash2, 

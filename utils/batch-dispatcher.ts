@@ -1,7 +1,7 @@
 "use server";
 
-import { AutomatedSurveyEngine, AutomationExecutionReport } from './survey-engine';
-import { IngestionDatabase } from './lib/db-store';
+import { AutomatedSurveyEngine, AutomationExecutionReport } from '@/utils/survey-engine';
+import { IngestionDatabase } from '@/lib/db-store';
 
 /**
  * Executes a point-in-time relational survey batch aggregation.
