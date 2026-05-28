@@ -16,11 +16,27 @@ export function BrandDiamondLogo({ className = "w-[24px] h-[24px]" }: { classNam
       viewBox="0 0 100 100" 
       fill="none" 
       xmlns="http://www.w3.org/2000/svg" 
-      className={className}
+      className={`${className} text-text-charcoal transition-colors`}
     >
-      <rect x="25" y="25" width="50" height="50" rx="8" transform="rotate(45 50 50)" fill="currentColor" className="text-accent-blue" />
-      <circle cx="50" cy="50" r="12" fill="var(--canvas-bg)" />
-      <circle cx="50" cy="50" r="6" fill="currentColor" className="text-accent-blue" />
+      <path 
+        d="M50 5 L95 50 L50 95 L5 50 Z" 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="4"
+        className="stroke-current"
+      />
+      <path 
+        d="M50 5 Q50 50 95 50 Q50 50 50 95 Q50 50 5 50 Q50 50 50 5" 
+        fill="currentColor" 
+        className="fill-current"
+        opacity="0.15"
+      />
+      <circle 
+        cx="50" 
+        cy="50" 
+        r="18" 
+        fill="#0052cc" 
+      />
     </svg>
   );
 }
