@@ -1,21 +1,3 @@
-// validation-schemas.ts
-// Lightweight Zod runtime compilation validation rules for payloads and inputs
-import { z } from 'zod';
-
-export const ExtensionMapSchema = z.object({
-  extension: z.string().min(2, "Extension must be at least 2 characters").max(6, "Extension is too long"),
-  mappedName: z.string().min(2, "Name must be at least 2 characters").max(50, "Name is too long"),
-  zohoUserId: z.string().min(3, "Zoho ID must be at least 3 characters").max(15, "Zoho ID is too long"),
-});
-
-export const TelemetryPayloadSchema = z.object({
-  agentId: z.string().uuid("Invalid agent unique identifier"),
-  status: z.enum(["Available", "Away from Phone", "On Call", "Ticket Work"]),
-  durationMins: z.number().nonnegative("Duration cannot be negative"),
-});
-
-export const WebhookLogSchema = z.object({
-  signature: z.string().min(1, "Signature verification token is required of source"),
-  timestamp: z.string().datetime("Timestamp must satisfy ISO format standards"),
-  payload: TelemetryPayloadSchema,
-});
+// app/validation-schemas.ts
+// Forward exports from root validation-schemas.ts
+export * from '../validation-schemas';

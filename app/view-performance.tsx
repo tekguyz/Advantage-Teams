@@ -43,7 +43,7 @@ export function ViewPerformance({
   triggerComplianceAudit,
 }: ViewPerformanceProps) {
   return (
-    <div id="page-performance-container" className="flex flex-col gap-5 text-left font-sans">
+    <div id="page-performance-container" className="flex flex-col gap-5 text-left font-sans min-h-screen overflow-y-auto pb-16">
       
       {/* HEADER SECTION */}
       <div id="performance-header-block" className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-[#dfe1e6]">

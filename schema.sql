@@ -1,177 +1,254 @@
 -- =============================================================================
--- SQL SCHEMA DEFINITION: 3CX Operations Telemetry & Automated Survey Suite
--- Author: Principal Database Engineer
+-- SQL MIGRATION SCHEMA: "Advantage Teams" High-Scalability Support Backend
+-- Author: Expert Full-Stack Database Engineer
 -- Database Engine: PostgreSQL 14+ / Supabase
 -- Description:
---   High-performance relational schema for ingestion of direct call logs and 
---   telemetry streams from 3CX. State is hosted locally (Supabase compatible)
---   with robust indexing for real-time productivity querying & database-level
---   suppression constraints.
+--   Optimized relational schema to scale support teams up to 12 tech resources,
+--   ingesting offline timelines, discrete update channels, and historical outbound
+--   feedback surveys with bulletproof indexing and constraints.
 -- =============================================================================
 
--- Enable UUID extension if supported
+-- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- =============================================================================
--- PART 1: DROP TABLES (FOR CLEAN MIGRATIONS)
+-- PART 1: DROP TABLES (FOR CLEAN CASCADE SETUP)
 -- =============================================================================
-DROP TABLE IF EXISTS pending_surveys CASCADE;
-DROP TABLE IF EXISTS activity_logs CASCADE;
-DROP TABLE IF EXISTS telemetry_logs CASCADE;
+DROP TABLE IF EXISTS survey_history CASCADE;
+DROP TABLE IF EXISTS system_updates CASCADE;
+DROP TABLE IF EXISTS activity_timelines CASCADE;
 DROP TABLE IF EXISTS agent_profiles CASCADE;
 
 -- =============================================================================
--- PART 2: AUTOMATED TIMESTAMP TRIGGER FUNCTIONS
--- =============================================================================
-
--- Standard function to automatically update 'updated_at' on any row mutation
-CREATE OR REPLACE FUNCTION trigger_set_timestamp()
-RETURNS TRIGGER AS $$
-BEGIN
-  NEW.updated_at = NOW();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
--- =============================================================================
--- PART 3: DEFINITIONS OF TABLES
+-- PART 2: THE SCHEMA TABLES DEFINITIONS
 -- =============================================================================
 
 -- 1. Table: agent_profiles
--- Represents the internal team agents handling calls.
--- 3CX extension is the natural unique key used by telephony equipment.
+-- Represents support technicians. Extension numbers are treated as natural unique keys.
 CREATE TABLE agent_profiles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    extension VARCHAR(20) NOT NULL UNIQUE, -- 3CX extension string
-    zoho_user_id VARCHAR(100) NOT NULL, -- For downstream references/mapping
-    agent_name VARCHAR(150) NOT NULL CONSTRAINT chk_agent_name_length CHECK (char_length(trim(agent_name)) >= 2),
-    active BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    3cx_extension VARCHAR(20) NOT NULL UNIQUE,
+    representative_name VARCHAR(150) NOT NULL CONSTRAINT chk_name_not_empty CHECK (char_length(trim(representative_name)) >= 2),
+    is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
--- 2. Table: telemetry_logs
--- Ingests real-time client status ticks from 3CX desktop/app streams.
--- Tracking productivity slots ('Ticket Work', 'On Call', 'Available', 'Away').
-CREATE TABLE telemetry_logs (
+-- 2. Table: activity_timelines
+-- Contains intervals during which engineers perform specialized offline or call-handling activities.
+CREATE TABLE activity_timelines (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     agent_id UUID NOT NULL REFERENCES agent_profiles(id) ON DELETE CASCADE,
-    status VARCHAR(50) NOT NULL CONSTRAINT chk_status_length CHECK (char_length(trim(status)) >= 2),
-    start_timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    end_timestamp TIMESTAMPTZ, -- Nullable if status is currently active
+    status_label VARCHAR(100) NOT NULL CONSTRAINT chk_status_label_not_empty CHECK (char_length(trim(status_label)) >= 2),
+    start_time TIMESTAMPTZ NOT NULL,
+    end_time TIMESTAMPTZ,
     duration_seconds INTEGER GENERATED ALWAYS AS (
-        EXTRACT(EPOCH FROM (end_timestamp - start_timestamp))::INTEGER
-    ) STORED, -- Computed duration in seconds when end_timestamp is written
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    -- Database rule guardrails
-    CONSTRAINT chk_timestamps_order CHECK (end_timestamp IS NULL OR end_timestamp >= start_timestamp)
+        CASE 
+            WHEN end_time IS NULL THEN NULL 
+            ELSE EXTRACT(EPOCH FROM (end_time - start_time))::INTEGER 
+        END
+    ) STORED,
+    CONSTRAINT chk_timeline_timestamps CHECK (end_time IS NULL OR end_time >= start_time)
 );
 
--- 3. Table: activity_logs
--- Captures discrete actions performed within the telemetry workspace.
-CREATE TABLE activity_logs (
+-- 3. Table: system_updates
+-- Tracks discrete CRM or ticket edits done by agents to correlate focus and output densities.
+CREATE TABLE system_updates (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     agent_id UUID NOT NULL REFERENCES agent_profiles(id) ON DELETE CASCADE,
-    platform_action_type VARCHAR(100) NOT NULL CONSTRAINT chk_platform_action_not_empty CHECK (char_length(trim(platform_action_type)) >= 2),
-    precise_action_timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    metadata TEXT NOT NULL DEFAULT '{}', -- Enforced metadata text constraint
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    update_type VARCHAR(100) NOT NULL,
+    log_timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 4. Table: pending_surveys
--- Holds outgoing post-call customer satisfaction surveys queued by the system.
-CREATE TABLE pending_surveys (
+-- 4. Table: survey_history
+-- Chronic records of post-call customer satisfaction survey dispatches and suppression alerts.
+CREATE TABLE survey_history (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    customer_phone VARCHAR(30) NOT NULL CONSTRAINT chk_phone_format CHECK (char_length(trim(customer_phone)) >= 5),
-    call_duration_seconds INTEGER NOT NULL CONSTRAINT chk_duration_positive CHECK (call_duration_seconds >= 0),
-    agent_extension VARCHAR(20) NOT NULL REFERENCES agent_profiles(extension) ON DELETE CASCADE,
-    status VARCHAR(20) NOT NULL DEFAULT 'pending',
-    queue_timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    -- Enforce valid status values via check constraint
-    CONSTRAINT chk_survey_status CHECK (status IN ('pending', 'sent', 'suppressed'))
+    customer_phone VARCHAR(50) NOT NULL,
+    call_duration_seconds INTEGER NOT NULL CONSTRAINT chk_call_duration CHECK (call_duration_seconds >= 0),
+    agent_extension VARCHAR(20) NOT NULL REFERENCES agent_profiles(3cx_extension) ON DELETE CASCADE,
+    delivery_status VARCHAR(50) NOT NULL CONSTRAINT chk_delivery_status CHECK (delivery_status IN ('Sent', 'Skipped: Under 2 Minutes', 'Skipped: Daily Cap Hit')),
+    processed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- =============================================================================
--- PART 4: SYSTEM GUARDRAILS (DEDUPLICATION & AUTO-SUPPRESSION TRIGGERS)
+-- PART 3: HIGH-PERFORMANCE INDEXING STRATEGY
 -- =============================================================================
-
--- Pre-insert and Pre-update Survey Ingestion Rule logic:
--- Any record written to 'pending_surveys' is auto-evaluated.
--- Rule 1: Flag as 'suppressed' if dial_duration is under 120 seconds.
--- Rule 2: Flag as 'suppressed' if the customer’s phone has been queued/registered
---         for another survey in the preceding 24-hour window.
-CREATE OR REPLACE FUNCTION tg_process_survey_suppression_rules()
-RETURNS TRIGGER AS $$
-DECLARE
-    found_recent BOOLEAN := FALSE;
-BEGIN
-    -- Rule 1: Short Calls Suppression (Duration < 120 seconds)
-    IF NEW.call_duration_seconds < 120 THEN
-        NEW.status := 'suppressed';
-        RETURN NEW;
-    END IF;
-
-    -- Rule 2: 24-Hour Deduplication Window
-    -- Check if another survey was queued for the same phone number in the past 24 hours of this queue action
-    SELECT EXISTS (
-        SELECT 1 
-        FROM pending_surveys 
-        WHERE customer_phone = NEW.customer_phone
-          AND queue_timestamp >= (NEW.queue_timestamp - INTERVAL '24 hours')
-          AND id <> COALESCE(NEW.id, '00000000-0000-0000-0000-000000000000'::uuid)
-    ) INTO found_recent;
-
-    IF found_recent THEN
-        NEW.status := 'suppressed';
-    END IF;
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_pending_surveys_suppression
-BEFORE INSERT OR UPDATE ON pending_surveys
-FOR EACH ROW
-EXECUTE FUNCTION tg_process_survey_suppression_rules();
+CREATE INDEX idx_activity_timelines_agent_span ON activity_timelines (agent_id, start_time, end_time DESC);
+CREATE INDEX idx_system_updates_tracker ON system_updates (agent_id, log_timestamp DESC);
+CREATE INDEX idx_survey_history_lookup ON survey_history (customer_phone, processed_at DESC);
+CREATE INDEX idx_agent_profiles_extension ON agent_profiles (3cx_extension);
 
 -- =============================================================================
--- PART 5: TIMESTAMPTZ UPDATED_AT TRIGGERS ASSEMBLY
--- =============================================================================
-CREATE TRIGGER trg_set_timestamp_agent_profiles BEFORE UPDATE ON agent_profiles FOR EACH ROW EXECUTE FUNCTION trigger_set_timestamp();
-CREATE TRIGGER trg_set_timestamp_telemetry_logs BEFORE UPDATE ON telemetry_logs FOR EACH ROW EXECUTE FUNCTION trigger_set_timestamp();
-CREATE TRIGGER trg_set_timestamp_activity_logs BEFORE UPDATE ON activity_logs FOR EACH ROW EXECUTE FUNCTION trigger_set_timestamp();
-CREATE TRIGGER trg_set_timestamp_pending_surveys BEFORE UPDATE ON pending_surveys FOR EACH ROW EXECUTE FUNCTION trigger_set_timestamp();
-
--- =============================================================================
--- PART 6: HIGH-PERFORMANCE INDEXING STRATEGY
+-- PART 4: THE MASTER SCALED SEED MATRIX
 -- =============================================================================
 
--- Optimization for real-time productivity dashboard query.
--- Queries frequently calculate productivity gaps by filtering telemetry_logs 
--- within specific TIMESTAMPTZ windows for active/inactive agents.
--- We use robust B-tree indices on telemetry_logs' timestamps and state identifiers.
+-- Seed 12 support technicians (UUIDs pre-generated for deterministic relationships)
+INSERT INTO agent_profiles (id, 3cx_extension, representative_name, is_active) VALUES
+('b1111111-1111-1111-1111-111111111111', '101', 'Sarah Jenkins', true),
+('b2222222-2222-2222-2222-222222222222', '102', 'Marcus Vance', true),
+('b3333333-3333-3333-3333-333333333333', '103', 'Elena Rostova', true),
+('b4444444-4444-4444-4444-444444444444', '104', 'David Kim', true),
+('b5555555-5555-5555-5555-555555555555', '105', 'Amanda Ross', true),
+('b6666666-6666-6666-6666-666666666666', '106', 'Carlos Mendez', true),
+('b7777777-7777-7777-7777-777777777777', '107', 'Rachel Green', true),
+('b8888888-8888-8888-8888-888888888888', '108', 'James Wilson', true),
+('b9999999-9999-9999-9999-999999999999', '109', 'Priya Patel', true),
+('c1111111-1111-1111-1111-111111111111', '110', 'John Doe', true),
+('c2222222-2222-2222-2222-222222222222', '111', 'Robert Chen', true),
+('c3333333-3333-3333-3333-333333333333', '112', 'Lisa Judd', true);
 
--- Index 1: Co-indexed lookup of live status durations and ranges (crucial for productivity lookups)
-CREATE INDEX idx_telemetry_agent_time_window 
-ON telemetry_logs (agent_id, start_timestamp, end_timestamp desc, status);
+-- Seed Focus-Rating Determinant Records (Current Local Base: 2026-05-28 08:00:00 UTC)
 
--- Index 2: Indexing on ongoing (active) telemetry logs (where end_timestamp is null)
-CREATE INDEX idx_telemetry_live_tracking 
-ON telemetry_logs (agent_id) 
-WHERE end_timestamp IS NULL;
+-- 1. Sarah Jenkins: 45 minutes offline ('Away from Phone'), 0 system updates -> Zero Focus Rating
+INSERT INTO activity_timelines (agent_id, status_label, start_time, end_time) VALUES
+('b1111111-1111-1111-1111-111111111111', 'Away from Phone', '2026-05-28 08:00:00+00', '2026-05-28 08:45:00+00');
 
--- Index 3: Precise action timeline tracing index (bento grids & chronological audit logging)
-CREATE INDEX idx_activity_agent_chronology 
-ON activity_logs (agent_id, precise_action_timestamp DESC);
+-- 2. Marcus Vance: 15 minutes offline ('Working Tickets'), 14 system updates -> High Density (Excellent Focus Rating)
+INSERT INTO activity_timelines (agent_id, status_label, start_time, end_time) VALUES
+('b2222222-2222-2222-2222-222222222222', 'Working Tickets', '2026-05-28 08:00:00+00', '2026-05-28 08:15:00+00');
 
--- Index 4: High-frequency phone matching to optimize the trigger's 24-hr deduplication checks
-CREATE INDEX idx_pending_surveys_dedup 
-ON pending_surveys (customer_phone, queue_timestamp DESC);
+INSERT INTO system_updates (agent_id, update_type, log_timestamp) VALUES
+('b2222222-2222-2222-2222-222222222222', 'Ticket Created (#891)', '2026-05-28 08:01:00+00'),
+('b2222222-2222-2222-2222-222222222222', 'Ticket Status Changed', '2026-05-28 08:02:00+00'),
+('b2222222-2222-2222-2222-222222222222', 'Asset Record Linked', '2026-05-28 08:03:00+00'),
+('b2222222-2222-2222-2222-222222222222', 'CRM Lead Transferred', '2026-05-28 08:04:00+00'),
+('b2222222-2222-2222-2222-222222222222', 'Technician Summary Written', '2026-05-28 08:05:00+00'),
+('b2222222-2222-2222-2222-222222222222', 'Workstation Config Saved', '2026-05-28 08:06:00+00'),
+('b2222222-2222-2222-2222-222222222222', 'Account Verified', '2026-05-28 08:07:00+00'),
+('b2222222-2222-2222-2222-222222222222', 'Callback Scheduled', '2026-05-28 08:08:00+00'),
+('b2222222-2222-2222-2222-222222222222', 'SLA Response Acknowledged', '2026-05-28 08:09:00+00'),
+('b2222222-2222-2222-2222-222222222222', 'Internal Note Staged', '2026-05-28 08:10:00+00'),
+('b2222222-2222-2222-2222-222222222222', 'CRM Status Modified', '2026-05-28 08:11:00+00'),
+('b2222222-2222-2222-2222-222222222222', 'Knowledge Base Queried', '2026-05-28 08:12:00+00'),
+('b2222222-2222-2222-2222-222222222222', 'Database Record Audited', '2026-05-28 08:13:00+00'),
+('b2222222-2222-2222-2222-222222222222', 'System Audit Finalized', '2026-05-28 08:14:00+00');
 
--- Index 5: 3CX Agent extension search index (highly selective on alphanumeric format)
-CREATE INDEX idx_agent_extension_lookup 
-ON agent_profiles (extension);
+-- 3. Elena Rostova: 32 minutes offline ('Away from Phone'), 1 update -> Low Focus Rating (~3%)
+INSERT INTO activity_timelines (agent_id, status_label, start_time, end_time) VALUES
+('b3333333-3333-3333-3333-333333333333', 'Away from Phone', '2026-05-28 08:00:00+00', '2026-05-28 08:32:00+00');
+
+INSERT INTO system_updates (agent_id, update_type, log_timestamp) VALUES
+('b3333333-3333-3333-3333-333333333333', 'Workstation Client Refreshed', '2026-05-28 08:15:00+00');
+
+-- 4. David Kim: 20 minutes offline ('Working Tickets'), 9 system updates -> Good focus density (~45%)
+INSERT INTO activity_timelines (agent_id, status_label, start_time, end_time) VALUES
+('b4444444-4444-4444-4444-444444444444', 'Working Tickets', '2026-05-28 08:00:00+00', '2026-05-28 08:20:00+00');
+
+INSERT INTO system_updates (agent_id, update_type, log_timestamp) VALUES
+('b4444444-4444-4444-4444-444444444444', 'Ticket Assigned', '2026-05-28 08:02:00+00'),
+('b4444444-4444-4444-4444-444444444444', 'Workstation Client Active', '2026-05-28 08:04:00+00'),
+('b4444444-4444-4444-4444-444444444444', 'Ticket Opened', '2026-05-28 08:06:00+00'),
+('b4444444-4444-4444-4444-444444444444', 'Technician Note Written', '2026-05-28 08:08:00+00'),
+('b4444444-4444-4444-4444-444444444444', 'Asset Tag Linked', '2026-05-28 08:10:00+00'),
+('b4444444-4444-4444-4444-444444444444', 'Knowledge Base Consulted', '2026-05-28 08:12:00+00'),
+('b4444444-4444-4444-4444-444444444444', 'Database Commit Received', '2026-05-28 08:14:00+00'),
+('b4444444-4444-4444-4444-444444444444', 'CRM File Attachment Uploaded', '2026-05-28 08:16:00+00'),
+('b4444444-4444-4444-4444-444444444444', 'Session Closed', '2026-05-28 08:18:00+00');
+
+-- 5. Amanda Ross: 30 minutes offline, 12 system updates -> Very High density
+INSERT INTO activity_timelines (agent_id, status_label, start_time, end_time) VALUES
+('b5555555-5555-5555-5555-555555555555', 'Working Tickets', '2026-05-28 08:00:00+00', '2026-05-28 08:30:00+00');
+
+INSERT INTO system_updates (agent_id, update_type, log_timestamp) VALUES
+('b5555555-5555-5555-5555-555555555555', 'Update A', '2026-05-28 08:02:00+00'),
+('b5555555-5555-5555-5555-555555555555', 'Update B', '2026-05-28 08:04:00+00'),
+('b5555555-5555-5555-5555-555555555555', 'Update C', '2026-05-28 08:06:00+00'),
+('b5555555-5555-5555-5555-555555555555', 'Update D', '2026-05-28 08:08:00+00'),
+('b5555555-5555-5555-5555-555555555555', 'Update E', '2026-05-28 08:10:00+00'),
+('b5555555-5555-5555-5555-555555555555', 'Update F', '2026-05-28 08:12:00+00'),
+('b5555555-5555-5555-5555-555555555555', 'Update G', '2026-05-28 08:14:00+00'),
+('b5555555-5555-5555-5555-555555555555', 'Update H', '2026-05-28 08:16:00+00'),
+('b5555555-5555-5555-5555-555555555555', 'Update I', '2026-05-28 08:18:00+00'),
+('b5555555-5555-5555-5555-555555555555', 'Update J', '2026-05-28 08:20:00+00'),
+('b5555555-5555-5555-5555-555555555555', 'Update K', '2026-05-28 08:22:00+00'),
+('b5555555-5555-5555-5555-555555555555', 'Update L', '2026-05-28 08:24:00+00');
+
+-- 6. Carlos Mendez: 20 minutes offline, 1 update -> Low focus
+INSERT INTO activity_timelines (agent_id, status_label, start_time, end_time) VALUES
+('b6666666-6666-6666-6666-666666666666', 'Away from Phone', '2026-05-28 08:00:00+00', '2026-05-28 08:20:00+00');
+
+INSERT INTO system_updates (agent_id, update_type, log_timestamp) VALUES
+('b6666666-6666-6666-6666-666666666666', 'Ping', '2026-05-28 08:05:00+00');
+
+-- 7. Rachel Green: 15 minutes offline, 6 updates -> Medium-high rating
+INSERT INTO activity_timelines (agent_id, status_label, start_time, end_time) VALUES
+('b7777777-7777-7777-7777-777777777777', 'Working Tickets', '2026-05-28 08:00:00+00', '2026-05-28 08:15:00+00');
+
+INSERT INTO system_updates (agent_id, update_type, log_timestamp) VALUES
+('b7777777-7777-7777-7777-777777777777', 'A', '2026-05-28 08:01:00+00'),
+('b7777777-7777-7777-7777-777777777777', 'B', '2026-05-28 08:03:00+00'),
+('b7777777-7777-7777-7777-777777777777', 'C', '2026-05-28 08:05:00+00'),
+('b7777777-7777-7777-7777-777777777777', 'D', '2026-05-28 08:07:00+00'),
+('b7777777-7777-7777-7777-777777777777', 'E', '2026-05-28 08:09:00+00'),
+('b7777777-7777-7777-7777-777777777777', 'F', '2026-05-28 08:11:00+00');
+
+-- 8. James Wilson: 35 minutes offline, 1 update -> Low focus
+INSERT INTO activity_timelines (agent_id, status_label, start_time, end_time) VALUES
+('b8888888-8888-8888-8888-888888888888', 'Away from Phone', '2026-05-28 08:00:00+00', '2026-05-28 08:35:00+00');
+
+INSERT INTO system_updates (agent_id, update_type, log_timestamp) VALUES
+('b8888888-8888-8888-8888-888888888888', 'Database Check', '2026-05-28 08:15:00+00');
+
+-- 9. Priya Patel: 12 minutes offline, 10 updates -> Extremely Focus Dense
+INSERT INTO activity_timelines (agent_id, status_label, start_time, end_time) VALUES
+('b9999999-9999-9999-9999-999999999999', 'Working Tickets', '2026-05-28 08:00:00+00', '2026-05-28 08:12:00+00');
+
+INSERT INTO system_updates (agent_id, update_type, log_timestamp) VALUES
+('b9999999-9999-9999-9999-999999999999', 'U1', '2026-05-28 08:01:00+00'),
+('b9999999-9999-9999-9999-999999999999', 'U2', '2026-05-28 08:02:00+00'),
+('b9999999-9999-9999-9999-999999999999', 'U3', '2026-05-28 08:03:00+00'),
+('b9999999-9999-9999-9999-999999999999', 'U4', '2026-05-28 08:04:00+00'),
+('b9999999-9999-9999-9999-999999999999', 'U5', '2026-05-28 08:05:00+00'),
+('b9999999-9999-9999-9999-999999999999', 'U6', '2026-05-28 08:06:00+00'),
+('b9999999-9999-9999-9999-999999999999', 'U7', '2026-05-28 08:07:00+00'),
+('b9999999-9999-9999-9999-999999999999', 'U8', '2026-05-28 08:08:00+00'),
+('b9999999-9999-9999-9999-999999999999', 'U9', '2026-05-28 08:09:00+00'),
+('b9999999-9999-9999-9999-999999999999', 'U10', '2026-05-28 08:10:00+00');
+
+-- 10. John Doe: 40 minutes offline, 0 updates -> Low status
+INSERT INTO activity_timelines (agent_id, status_label, start_time, end_time) VALUES
+('c1111111-1111-1111-1111-111111111111', 'Break', '2026-05-28 08:00:00+00', '2026-05-28 08:40:00+00');
+
+-- 11. Robert Chen: 18 minutes offline, 12 updates -> Excellent
+INSERT INTO activity_timelines (agent_id, status_label, start_time, end_time) VALUES
+('c2222222-2222-2222-2222-222222222222', 'Working Tickets', '2026-05-28 08:00:00+00', '2026-05-28 08:18:00+00');
+
+INSERT INTO system_updates (agent_id, update_type, log_timestamp) VALUES
+('c2222222-2222-2222-2222-222222222222', 'U1', '2026-05-28 08:01:00+00'),
+('c2222222-2222-2222-2222-222222222222', 'U2', '2026-05-28 08:02:00+00'),
+('c2222222-2222-2222-2222-222222222222', 'U3', '2026-05-28 08:03:00+00'),
+('c2222222-2222-2222-2222-222222222222', 'U4', '2026-05-28 08:04:00+00'),
+('c2222222-2222-2222-2222-222222222222', 'U5', '2026-05-28 08:05:00+00'),
+('c2222222-2222-2222-2222-222222222222', 'U6', '2026-05-28 08:06:00+00'),
+('c2222222-2222-2222-2222-222222222222', 'U7', '2026-05-28 08:07:00+00'),
+('c2222222-2222-2222-2222-222222222222', 'U8', '2026-05-28 08:08:00+00'),
+('c2222222-2222-2222-2222-222222222222', 'U9', '2026-05-28 08:09:00+00'),
+('c2222222-2222-2222-2222-222222222222', 'U10', '2026-05-28 08:10:00+00'),
+('c2222222-2222-2222-2222-222222222222', 'U11', '2026-05-28 08:11:00+00'),
+('c2222222-2222-2222-2222-222222222222', 'U12', '2026-05-28 08:12:00+00');
+
+-- 12. Lisa Judd: 25 minutes offline, 15 updates -> Excellent Focus Density
+INSERT INTO activity_timelines (agent_id, status_label, start_time, end_time) VALUES
+('c3333333-3333-3333-3333-333333333333', 'Working Tickets', '2026-05-28 08:00:00+00', '2026-05-28 08:25:00+00');
+
+INSERT INTO system_updates (agent_id, update_type, log_timestamp) VALUES
+('c3333333-3333-3333-3333-333333333333', 'U1', '2026-05-28 08:01:00+00'),
+('c3333333-3333-3333-3333-333333333333', 'U2', '2026-05-28 08:02:00+00'),
+('c3333333-3333-3333-3333-333333333333', 'U3', '2026-05-28 08:03:00+00'),
+('c3333333-3333-3333-3333-333333333333', 'U4', '2026-05-28 08:04:00+00'),
+('c3333333-3333-3333-3333-333333333333', 'U5', '2026-05-28 08:05:00+00'),
+('c3333333-3333-3333-3333-333333333333', 'U6', '2026-05-28 08:06:00+00'),
+('c3333333-3333-3333-3333-333333333333', 'U7', '2026-05-28 08:07:00+00'),
+('c3333333-3333-3333-3333-333333333333', 'U8', '2026-05-28 08:08:00+00'),
+('c3333333-3333-3333-3333-333333333333', 'U9', '2026-05-28 08:09:00+00'),
+('c3333333-3333-3333-3333-333333333333', 'U10', '2026-05-28 08:10:00+00'),
+('c3333333-3333-3333-3333-333333333333', 'U11', '2026-05-28 08:11:00+00'),
+('c3333333-3333-3333-3333-333333333333', 'U12', '2026-05-28 08:12:00+00'),
+('c3333333-3333-3333-3333-333333333333', 'U13', '2026-05-28 08:13:00+00'),
+('c3333333-3333-3333-3333-333333333333', 'U14', '2026-05-28 08:14:00+00'),
+('c3333333-3333-3333-3333-333333333333', 'U15', '2026-05-28 08:15:00+00');
+
+-- Add three initial records to the survey_history table for immediate verification
+INSERT INTO survey_history (customer_phone, call_duration_seconds, agent_extension, delivery_status, processed_at) VALUES
+('+15550192834', 345, '102', 'Sent', '2026-05-28 08:10:00+00'),
+('+15550144921', 42, '101', 'Skipped: Under 2 Minutes', '2026-05-28 08:12:00+00'),
+('+15550178833', 180, '104', 'Skipped: Daily Cap Hit', '2026-05-28 08:14:00+00');
