@@ -162,9 +162,9 @@ export function AllRowsCounter({ count, active, onClick }: CounterProps) {
       }`}
     >
       <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">All Rows</span>
-      <div className="badge-container-grid mt-1.5">
+      <div className="badge-container-grid mt-1.5 flex items-center justify-between w-full">
         <span className="text-[16px] font-bold text-text-charcoal">{count}</span>
-        <MetricBadge className="bg-status-neutral-bg text-status-neutral-text">Registers</MetricBadge>
+        <MetricBadge className="bg-status-neutral-bg text-status-neutral-text border border-status-neutral-text/10 uppercase tracking-widest text-[8.5px]">ALL LOGS</MetricBadge>
       </div>
     </button>
   );
@@ -182,9 +182,9 @@ export function SentCounter({ count, active, onClick }: CounterProps) {
       }`}
     >
       <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Sent Logs</span>
-      <div className="badge-container-grid mt-1.5">
+      <div className="badge-container-grid mt-1.5 flex items-center justify-between w-full">
         <span className="text-[16px] font-bold text-status-verified-text">{count}</span>
-        <MetricBadge className="bg-status-verified-bg text-status-verified-text">Dispatched</MetricBadge>
+        <MetricBadge className="bg-status-verified-bg text-status-verified-text border border-status-verified-text/10 uppercase tracking-widest text-[8.5px]">SENT</MetricBadge>
       </div>
     </button>
   );
@@ -202,9 +202,9 @@ export function SkippedCounter({ count, active, onClick }: CounterProps) {
       }`}
     >
       <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Skipped</span>
-      <div className="badge-container-grid mt-1.5">
+      <div className="badge-container-grid mt-1.5 flex items-center justify-between w-full">
         <span className="text-[16px] font-bold text-status-skipped-text">{count}</span>
-        <MetricBadge className="bg-status-skipped-bg text-status-skipped-text">Suppressed</MetricBadge>
+        <MetricBadge className="bg-status-skipped-bg text-status-skipped-text border border-status-skipped-text/10 uppercase tracking-widest text-[8.5px]">SKIPPED</MetricBadge>
       </div>
     </button>
   );
@@ -222,9 +222,9 @@ export function DuplicateCounter({ count, active, onClick }: CounterProps) {
       }`}
     >
       <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Duplicate</span>
-      <div className="badge-container-grid mt-1.5">
+      <div className="badge-container-grid mt-1.5 flex items-center justify-between w-full">
         <span className="text-[16px] font-bold text-status-attention-text">{count}</span>
-        <MetricBadge className="bg-status-attention-bg text-status-attention-text">Duplicate</MetricBadge>
+        <MetricBadge className="bg-status-attention-bg text-status-attention-text border border-status-attention-text/15 uppercase tracking-widest text-[8.5px]">DUPLICATE</MetricBadge>
       </div>
     </button>
   );

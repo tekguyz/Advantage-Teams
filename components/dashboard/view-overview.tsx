@@ -86,7 +86,7 @@ export default function ViewOverview({
                 <BarChart2 className="w-4 h-4 text-accent-blue" />
                 Team Focus Summary
               </h3>
-              <span className="text-[10px] text-accent-blue font-semibold bg-accent-blue/10 px-2 py-0.5 rounded-[3px]">Live Sync</span>
+              <span className="text-[9.5px] font-bold text-accent-blue tracking-wider uppercase bg-accent-blue/10 border border-accent-blue/15 px-2 py-0.5 rounded-[3px] select-none shadow-3xs">LIVE SYNC</span>
             </div>
 
             <div className="grid grid-cols-3 gap-3 mb-5">
@@ -147,7 +147,7 @@ export default function ViewOverview({
                 <TrendingUp className="w-4 h-4 text-status-verified-text" />
                 Survey Pipeline Summary
               </h3>
-              <span className="text-[10px] text-status-verified-text font-semibold bg-status-verified-bg px-2 py-0.5 rounded-[3px]">Active Carrier</span>
+              <span className="text-[9.5px] font-bold text-status-verified-text tracking-wider uppercase bg-status-verified-bg border border-status-verified-text/10 px-2 py-0.5 rounded-[3px] select-none shadow-3xs">ACTIVE CARRIER</span>
             </div>
 
             <div className="grid grid-cols-3 gap-3 mb-5">

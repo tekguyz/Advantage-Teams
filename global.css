@@ -19,8 +19,8 @@
   --status-verified-bg: #e3fcef;
   --status-verified-text: #006644;
   
-  --status-skipped-bg: #fffae6; /* Clean Amber/Yellow utility for filtered items */
-  --status-skipped-text: #b35b00;
+  --status-skipped-bg: #deebff; /* Clean Blue utility for filtered/skipped items */
+  --status-skipped-text: #0747a6;
   
   --status-attention-bg: #ffebe6;
   --status-attention-text: #bf2600;
@@ -45,8 +45,8 @@ html.dark {
   --status-verified-bg: #1f3a2b;
   --status-verified-text: #57d9a3;
   
-  --status-skipped-bg: #3a2e12;
-  --status-skipped-text: #f1b44c;
+  --status-skipped-bg: #0c2d52;
+  --status-skipped-text: #65b6fc;
   
   --status-attention-bg: #3d1d1d;
   --status-attention-text: #ff8f73;

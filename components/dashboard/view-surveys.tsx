@@ -142,9 +142,9 @@ export default function ViewSurveys({
               {calls.slice(0, 5).map((log, i) => {
                 const rep = mappings.find(m => m.extension === log.agent_extension)?.mappedName || `Ext ${log.agent_extension}`;
                 const labelClass = log.delivery_status === 'Sent' 
-                  ? 'bg-status-verified-bg text-status-verified-text' 
-                  : (log.delivery_status === 'Skipped: Under 2 Minutes' ? 'bg-status-skipped-bg text-status-skipped-text' : 'bg-status-attention-bg text-status-attention-text');
-                const labelText = log.delivery_status === 'Sent' ? 'Sent' : (log.delivery_status === 'Skipped: Under 2 Minutes' ? 'Skipped' : 'Duplicate');
+                  ? 'bg-status-verified-bg text-status-verified-text border border-status-verified-text/10' 
+                  : (log.delivery_status === 'Skipped: Under 2 Minutes' ? 'bg-status-skipped-bg text-status-skipped-text border border-status-skipped-text/10' : 'bg-status-attention-bg text-status-attention-text border border-status-attention-text/10');
+                const labelText = log.delivery_status === 'Sent' ? 'SENT' : (log.delivery_status === 'Skipped: Under 2 Minutes' ? 'SKIPPED' : 'DUPLICATE');
                 return (
                   <tr key={i} className="hover:bg-sidebar-bg/20 transition-all font-medium">
                     <td className="p-2.5 pl-4 border-r border-border-soft font-bold">{rep} <span className="font-mono text-text-muted font-normal text-[9.5px] ml-1.5">(Ext {log.agent_extension})</span></td>
@@ -192,10 +192,10 @@ export default function ViewSurveys({
             <tbody className="divide-y divide-border-soft bg-canvas-bg text-text-charcoal">
               {filteredCalls.map((log, i) => {
                 const rep = mappings.find(m => m.extension === log.agent_extension)?.mappedName || `Ext ${log.agent_extension}`;
-                const finalStatus = log.delivery_status === 'Sent' ? 'Sent' : (log.delivery_status === 'Skipped: Under 2 Minutes' ? 'Skipped' : 'Duplicate');
+                const finalStatus = log.delivery_status === 'Sent' ? 'SENT' : (log.delivery_status === 'Skipped: Under 2 Minutes' ? 'SKIPPED' : 'DUPLICATE');
                 const finalColor = log.delivery_status === 'Sent' 
-                  ? 'bg-status-verified-bg text-status-verified-text' 
-                  : (log.delivery_status === 'Skipped: Under 2 Minutes' ? 'bg-status-skipped-bg text-status-skipped-text' : 'bg-status-attention-bg text-status-attention-text');
+                  ? 'bg-status-verified-bg text-status-verified-text border border-status-verified-text/10' 
+                  : (log.delivery_status === 'Skipped: Under 2 Minutes' ? 'bg-status-skipped-bg text-status-skipped-text border border-status-skipped-text/10' : 'bg-status-attention-bg text-status-attention-text border border-status-attention-text/10');
                 return (
                   <tr key={i} className="hover:bg-sidebar-bg/20 transition-all font-medium">
                     <td className="p-2 pl-3 border-r border-border-soft font-mono text-text-muted">{new Date(log.processed_at).toLocaleTimeString()}</td>

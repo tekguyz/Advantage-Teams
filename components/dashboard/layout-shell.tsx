@@ -125,56 +125,60 @@ function SidebarNav({ onOpenHelp, isCollapsed, onToggleCollapse }: SidebarNavPro
         isCollapsed ? 'w-[68px]' : 'w-[240px]'
       }`}
     >
-      <div className="flex flex-col">
-        {/* Brand Header block */}
-        <div id="sidebar-header" className={`h-[54px] px-4 flex items-center border-b border-border-soft bg-canvas-bg overflow-hidden ${
-          isCollapsed ? 'justify-center' : 'justify-start'
-        }`}>
-          <div className="flex items-center gap-3 shrink-0">
-            <BrandDiamondLogo className="w-5 h-5 shrink-0" />
-            {!isCollapsed && (
-              <div className="flex flex-col min-w-0 animate-fadeIn text-left">
-                <span className="font-bold text-text-charcoal text-[13.5px] tracking-tight leading-tight truncate">Advantage Software</span>
-                <span className="text-[9.5px] text-text-muted leading-none font-bold tracking-wider uppercase">Staff Portal</span>
-              </div>
+      <div className="flex flex-col flex-1 justify-between">
+        <div className="flex flex-col">
+          {/* Brand Header block */}
+          <div id="sidebar-header" className={`h-[54px] px-4 flex items-center border-b border-border-soft bg-canvas-bg overflow-hidden ${
+            isCollapsed ? 'justify-center' : 'justify-start'
+          }`}>
+            <div className="flex items-center gap-3 shrink-0">
+              <BrandDiamondLogo className="w-5 h-5 shrink-0" />
+              {!isCollapsed && (
+                <div className="flex flex-col min-w-0 animate-fadeIn text-left">
+                  <span className="font-bold text-text-charcoal text-[13.5px] tracking-tight leading-tight truncate">Advantage Software</span>
+                  <span className="text-[9.5px] text-text-muted leading-none font-bold tracking-wider uppercase">Staff Portal</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Navigation block */}
+          <div className="flex flex-col gap-1.5 py-4">
+            {!isCollapsed ? (
+              <span className="px-4 text-[10px] font-bold text-text-muted tracking-wider uppercase opacity-80 block animate-fadeIn">
+                Workspace Views
+              </span>
+            ) : (
+              <div className="h-[1px] bg-border-soft mx-3 my-1" />
             )}
+            <nav className="flex flex-col">
+              {navItems.map((item) => {
+                const isActive = activeView === item.value;
+                const IconComponent = item.icon;
+                return (
+                  <button
+                    key={item.value}
+                    onClick={() => handleNavigate(item.value)}
+                    className={`flex items-center transition-all border-l-[3px] text-left cursor-pointer h-[38px] ${
+                      isCollapsed ? 'justify-center px-0' : 'gap-3 px-4'
+                    } ${
+                      isActive
+                        ? 'bg-border-soft/60 text-accent-blue border-accent-blue font-bold'
+                        : 'text-text-charcoal hover:bg-border-soft/30 border-transparent hover:text-accent-blue'
+                    }`}
+                    title={isCollapsed ? item.label : undefined}
+                  >
+                    <IconComponent className={`w-4 h-4 shrink-0 ${isActive ? 'text-accent-blue' : 'text-text-muted'}`} />
+                    {!isCollapsed && <span className="truncate font-medium text-[12.5px] animate-fadeIn">{item.label}</span>}
+                  </button>
+                );
+              })}
+            </nav>
           </div>
         </div>
 
-        {/* Navigation block */}
-        <div className="flex flex-col gap-1.5 py-4">
-          {!isCollapsed ? (
-            <span className="px-4 text-[10px] font-bold text-text-muted tracking-wider uppercase opacity-80 block animate-fadeIn">
-              Workspace Views
-            </span>
-          ) : (
-            <div className="h-[1px] bg-border-soft mx-3 my-1" />
-          )}
-          <nav className="flex flex-col">
-            {navItems.map((item) => {
-              const isActive = activeView === item.value;
-              const IconComponent = item.icon;
-              return (
-                <button
-                  key={item.value}
-                  onClick={() => handleNavigate(item.value)}
-                  className={`flex items-center transition-all border-l-[3px] text-left cursor-pointer h-[38px] ${
-                    isCollapsed ? 'justify-center px-0' : 'gap-3 px-4'
-                  } ${
-                    isActive
-                      ? 'bg-border-soft/60 text-accent-blue border-accent-blue font-bold'
-                      : 'text-text-charcoal hover:bg-border-soft/30 border-transparent hover:text-accent-blue'
-                  }`}
-                  title={isCollapsed ? item.label : undefined}
-                >
-                  <IconComponent className={`w-4 h-4 shrink-0 ${isActive ? 'text-accent-blue' : 'text-text-muted'}`} />
-                  {!isCollapsed && <span className="truncate font-medium text-[12.5px] animate-fadeIn">{item.label}</span>}
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* Interactive Collapse Selector Row */}
+        {/* Interactive Collapse Selector Row at Bottom of Upper Section */}
+        <div className="flex flex-col pb-2 shrink-0">
           <div className="h-[1px] bg-border-soft/60 mx-3 my-1.5" />
           <button
             onClick={onToggleCollapse}
@@ -200,22 +204,20 @@ function SidebarNav({ onOpenHelp, isCollapsed, onToggleCollapse }: SidebarNavPro
       {/* Corporate profile footer badge */}
       {isCollapsed ? (
         <div className="p-3 bg-canvas-bg border-t border-border-soft flex flex-col items-center gap-3 select-none">
+          <button
+            onClick={onOpenHelp}
+            type="button"
+            className="p-1.5 rounded-[3px] border border-border-soft hover:bg-border-soft/40 text-text-muted hover:text-text-charcoal transition-all cursor-pointer"
+            title="Open Workspace Help & Docs"
+          >
+            <HelpCircle className="w-4 h-4" />
+          </button>
+          <ThemeToggle />
           <div 
             className="w-[30px] h-[30px] rounded-full bg-accent-blue text-canvas-bg flex items-center justify-center font-bold text-[11px] shrink-0 border border-border-soft/30 cursor-pointer"
             title="Ops Manager (ID: ADV-3CX0)"
           >
             OP
-          </div>
-          <div className="flex flex-col gap-2.5 items-center">
-            <button
-              onClick={onOpenHelp}
-              type="button"
-              className="p-1.5 rounded-[3px] border border-border-soft hover:bg-border-soft/40 text-text-muted hover:text-text-charcoal transition-all cursor-pointer"
-              title="Open Workspace Help & Docs"
-            >
-              <HelpCircle className="w-4 h-4" />
-            </button>
-            <ThemeToggle />
           </div>
         </div>
       ) : (
@@ -262,19 +264,19 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
   const faqs = [
     {
       q: "How does this system help office representatives receive proper credit?",
-      a: "By linking physical hardware handset extensions directly to active Zoho member profiles, any external client interaction is auto-routed to the correct representative. Shift leads and HR get dynamic live charts proving authentic project engagement hours, giving staff undeniable proof and credit for their external work actions."
+      a: "By linking physical handset extensions directly to active CRM profiles, any client interaction is auto-routed to the correct representative. Shift leads get dynamic live charts proving authentic project engagement, giving staff proof and credit for their external work."
     },
     {
-      q: "Why are some customer satisfaction surveys skipped/suppressed?",
-      a: "Our quality assurance limits survey dispatches to meaningful call interactions. Calls under 120 seconds (under 2 minutes) are skipped to filter out answering machines, quick drops, or misdials, and client handsets are capped at 1 survey per 24 hours to block spam."
+      q: "Why are some customer satisfaction surveys skipped?",
+      a: "Our quality standards limit surveys to meaningful call interactions. Calls under 2 minutes are skipped to filter out answering machines, quick drops, or misdials, and client handsets are capped at 1 survey per day to block duplication."
     },
     {
       q: "What is the Focus Level metric and how is it used?",
-      a: "Focus level analyzes representative activity. It is calculated by dividing logged system updates by duration. If updates per hour are lower than 40%, the system flags a 'Review' tag to indicate that active workspace feedback might be required, which supervisors can easily clear manually."
+      a: "Focus level analyzes representative activity. It is calculated by dividing logged system updates by duration. If updates per hour are lower than 40%, the system flags a 'Review' tag so supervisors can easily clear or verify them manually."
     },
     {
-      q: "How does the Zoho database mapping synchronizer run?",
-      a: "Once a call meets compliance requirements, our SMS gateway dispatches the satisfaction feedback loop via Twilio. When the client responds, results map directly back to their Zoho Desk CRM timeline profile so no documentation is lost."
+      q: "How does the CRM database mapping synchronizer run?",
+      a: "Once a call meets compliance requirements, our SMS system dispatches the survey. When the client responds, results map directly back to their CRM profile timeline so no documentation is lost."
     }
   ];
 
@@ -288,7 +290,7 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
 
       {/* Drawer */}
       <div className="relative w-full max-w-[560px] h-full bg-canvas-bg shadow-2xl flex flex-col justify-between border-l border-border-soft z-50 p-6 animate-slideIn text-left transition-colors duration-150">
-        <div className="flex-1 overflow-y-auto pr-1 text-[12.5px] text-text-charcoal flex flex-col">
+        <div className="flex-1 overflow-y-auto pr-1 text-[11.5px] text-text-charcoal flex flex-col">
           
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border-soft pb-4 mb-4">
@@ -297,8 +299,8 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
                 <HelpCircle className="w-5 h-5 text-accent-blue" />
               </div>
               <div>
-                <h3 className="font-bold text-[14.5px] text-text-charcoal tracking-tight">Support & Knowledge Base</h3>
-                <p className="text-[10px] text-text-muted font-semibold uppercase mt-0.5">Console Manual & Verification Guide</p>
+                <h3 className="font-bold text-[14px] text-text-charcoal tracking-tight">Support & Knowledge Base</h3>
+                <p className="text-[10px] text-text-muted font-bold uppercase mt-0.5">Console Manual & Verification Guide</p>
               </div>
             </div>
             <button 
@@ -310,12 +312,12 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
           </div>
  
           {/* Welcome Guidance Card */}
-          <div className="bg-accent-blue/5 border border-accent-blue/15 rounded-[3px] p-4 mb-4">
-            <h4 className="font-bold text-[13px] text-text-charcoal mb-1 flex items-center gap-1.5">
-              💡 Welcome to your Operations Workspace
+          <div className="bg-accent-blue/5 border border-accent-blue/15 rounded-[3px] p-3 mb-3">
+            <h4 className="font-bold text-[12px] text-text-charcoal mb-1 flex items-center gap-1.5 leading-tight">
+              💡 Operations Help Center
             </h4>
-            <p className="text-[12px] text-text-muted leading-relaxed">
-              Advantage Software bridges physical phone connections (via 3CX WebHooks) with Zoho CRM contact files, automating satisfaction surveys over Twilio SMS. Use this reference area to learn about employee verification, compliance guardrails, and representative mappings.
+            <p className="text-[11px] text-text-muted leading-relaxed">
+              Advantage Software links office calls with CRM customer records to automate feedback surveys. Walk through these sections to learn about employee verification rules and survey filters.
             </p>
           </div>
 
@@ -347,96 +349,94 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
           {/* Tab Content Panels */}
           <div className="flex-1">
             {activeTab === 'architecture' && (
-              <div className="flex flex-col gap-4 animate-fadeIn">
+              <div className="flex flex-col gap-3.5 animate-fadeIn">
                 <div>
-                  <h4 className="font-bold text-[12.5px] text-text-charcoal mb-1.5 flex items-center gap-1.5 uppercase tracking-wide">
-                    <Database className="w-4 h-4 text-accent-blue" />
-                    Office-to-Project Team Synergy
+                  <h4 className="font-bold text-[12px] text-text-charcoal mb-1 flex items-center gap-1.5 uppercase tracking-wide">
+                    <Database className="w-3.5 h-3.5 text-accent-blue" />
+                    Office-to-CRM Synergy
                   </h4>
-                  <p className="text-[12px] leading-relaxed text-text-muted text-justify">
-                    This workspace is built specifically to support office staff working on external client projects. By mapping physical handset extensions directly to active Zoho member profiles, we verify client-focused actions so team members automatically receive proper engagement credit and recognition:
+                  <p className="text-[11.5px] leading-relaxed text-text-muted text-justify">
+                    This portal supports office representatives working on customer accounts. By matching phone extensions with active member profiles, interactions are automatically verified so representatives receive proper evaluation credit:
                   </p>
                 </div>
 
-                <div className="bg-sidebar-bg border border-border-soft rounded-[3px] p-3 font-mono text-[10.5px] text-text-charcoal flex flex-col gap-2.5">
-                  <div className="flex items-start gap-2">
-                    <span className="bg-accent-blue/15 text-accent-blue font-extrabold px-1.5 py-0.5 rounded leading-none">1</span>
-                    <div>
-                      <strong className="text-text-charcoal">3CX WebHook Event Ingestion</strong>
-                      <p className="text-[10px] text-text-muted mt-0.5">Captures communication activity events from hardware devices as soon as representative hang-ups hit the server.</p>
+                <div className="bg-sidebar-bg/60 border border-border-soft rounded-[3px] p-3 flex flex-col gap-2.5">
+                  <div className="flex items-start gap-2.5">
+                    <span className="bg-[#0052cc] text-white font-extrabold w-4.5 h-4.5 text-[10px] rounded-full flex items-center justify-center shrink-0">1</span>
+                    <div className="flex-1 min-w-0">
+                      <strong className="text-text-charcoal text-[11.5px] block font-bold leading-tight">Inbound Phone Call Sync</strong>
+                      <p className="text-[11px] text-text-muted mt-0.5 leading-normal">Pulls call connection logs automatically when representative discussions conclude.</p>
                     </div>
                   </div>
-                  <div className="h-4 border-l border-dashed border-border-soft/80 ml-3" />
-                  <div className="flex items-start gap-2">
-                    <span className="bg-amber-500/15 text-amber-600 font-extrabold px-1.5 py-0.5 rounded leading-none">2</span>
-                    <div>
-                      <strong className="text-text-charcoal">Representative Verification Matrix</strong>
-                      <p className="text-[10px] text-text-muted mt-0.5">Matches physical extensions to corresponding Zoho Desk profiles so employee records get verified automatically.</p>
+                  <div className="flex items-start gap-2.5">
+                    <span className="bg-[#b35b00] dark:bg-[#f1b44c] text-white dark:text-[#3a2e12] font-extrabold w-4.5 h-4.5 text-[10px] rounded-full flex items-center justify-center shrink-0">2</span>
+                    <div className="flex-1 min-w-0">
+                      <strong className="text-text-charcoal text-[11.5px] block font-bold leading-tight">Representative Verified Matches</strong>
+                      <p className="text-[11px] text-text-muted mt-0.5 leading-normal">Pairs specific office phone extensions with customer profiles for accurate performance tracking.</p>
                     </div>
                   </div>
-                  <div className="h-4 border-l border-dashed border-border-soft/80 ml-3" />
-                  <div className="flex items-start gap-2">
-                    <span className="bg-status-verified-bg text-status-verified-text font-extrabold px-1.5 py-0.5 rounded leading-none">3</span>
-                    <div>
-                      <strong className="text-text-charcoal">Delivery of Satisfaction Feedback</strong>
-                      <p className="text-[10px] text-text-muted mt-0.5">SMS satisfaction questions automatically dispatch to customer numbers, preserving feedback on CRM records.</p>
+                  <div className="flex items-start gap-2.5">
+                    <span className="bg-[#006644] dark:bg-[#57d9a3] text-white dark:text-[#1f3a2b] font-extrabold w-4.5 h-4.5 text-[10px] rounded-full flex items-center justify-center shrink-0">3</span>
+                    <div className="flex-1 min-w-0">
+                      <strong className="text-text-charcoal text-[11.5px] block font-bold leading-tight">Automated Survey Sendouts</strong>
+                      <p className="text-[11px] text-text-muted mt-0.5 leading-normal">Dispatches brief satisfaction questions to customer numbers and records responses in CRM histories.</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="border border-border-soft p-3.5 rounded-[4px] bg-sidebar-bg/25 leading-relaxed text-text-muted">
-                  <strong className="font-bold text-text-charcoal block mb-1">Ensuring Proper Evaluation Credit</strong>
-                  By automating this activity verification channel, supervisors can track actual performance metrics across remote project assignments dynamically, without forcing representatives to manually compose daily progress reports.
+                <div className="border border-border-soft p-3 rounded-[3px] bg-sidebar-bg/20 text-[11px] leading-relaxed text-text-muted">
+                  <strong className="font-bold text-text-charcoal block mb-0.5">Ensuring Proper Evaluation Credit</strong>
+                  This automatic verification chain makes it easy for coordinators to track active phone engagements without requiring staff to submit manual shift reports.
                 </div>
               </div>
             )}
 
             {activeTab === 'policies' && (
-              <div className="flex flex-col gap-4 animate-fadeIn">
+              <div className="flex flex-col gap-3.5 animate-fadeIn">
                 <div>
-                  <h4 className="font-bold text-[12.5px] text-text-charcoal mb-1.5 flex items-center gap-1.5 uppercase tracking-wide">
-                    <ShieldCheck className="w-4 h-4 text-accent-blue" />
-                    Quality Assurance & Client Compliance
+                  <h4 className="font-bold text-[12px] text-text-charcoal mb-1 flex items-center gap-1.5 uppercase tracking-wide">
+                    <ShieldCheck className="w-3.5 h-3.5 text-accent-blue" />
+                    Quality Guidelines & Compliance
                   </h4>
-                  <p className="text-[12px] leading-relaxed text-text-muted text-justify">
-                    To maintain professional outreach, avoid system collisions, and secure a spectacular customer experience, the workspace applies automated verification filters on all outgoing survey queues:
+                  <p className="text-[11.5px] leading-relaxed text-text-muted text-justify">
+                    To maintain professional standards and prevent customer fatigue, the system applies automated filters before queueing any outbound messages:
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3">
-                  <div className="border border-border-soft p-3 rounded-[3px] bg-sidebar-bg/40">
-                    <span className="font-bold text-[12px] text-text-charcoal flex items-center gap-1.5">
+                <div className="grid grid-cols-1 gap-2.5">
+                  <div className="border border-border-soft p-3 rounded-[3px] bg-sidebar-bg/30">
+                    <span className="font-bold text-[11.5px] text-text-charcoal flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 bg-accent-blue rounded-full" />
-                      120-Second Active Quality Filter
+                      Two-Minute Conversation Minimum
                     </span>
-                    <p className="text-[11.5px] text-text-muted mt-1 leading-relaxed">
-                      Calls with active client conversations under 2 minutes are listed as <span className="font-mono text-[10.5px] bg-border-soft text-text-charcoal px-1 py-0.5 rounded font-semibold">Skipped: Under 2 Minutes</span>. This filters out automated IVR drops, voicemails, or wrong numbers, guaranteeing only meaningful client-facing actions trigger dynamic feedback dispatches.
+                    <p className="text-[11px] text-text-muted mt-0.5 leading-relaxed">
+                      Calls shorter than two minutes are excluded to filter out misdials or automated voicemail answers, ensuring only meaningful calls trigger survey sends.
                     </p>
                   </div>
 
-                  <div className="border border-border-soft p-3 rounded-[3px] bg-sidebar-bg/40">
-                    <span className="font-bold text-[12px] text-text-charcoal flex items-center gap-1.5">
+                  <div className="border border-border-soft p-3 rounded-[3px] bg-sidebar-bg/30">
+                    <span className="font-bold text-[11.5px] text-text-charcoal flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
-                      Client Daily Anti-Spam Ceiling
+                      Daily Spam Prevention Cap
                     </span>
-                    <p className="text-[11.5px] text-text-muted mt-1 leading-relaxed">
-                      Each unique client telephone register is restricted to a maximum of <span className="font-bold">1 feedback survey per 24-hour cycle</span>. Duplicate handoffs inside the same workday are auto-filtered to prevent customer fatigue.
+                    <p className="text-[11px] text-text-muted mt-0.5 leading-relaxed">
+                      Customer phone numbers are limited to one feedback request per twenty-four-hour cycle. Frequent contacts are automatically filtered.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3 border border-status-attention-text/20 bg-status-attention-bg rounded-[3px] text-status-attention-text text-[11.5px] leading-relaxed">
-                  <strong className="font-bold block mb-1">Supervisor Override Action</strong>
-                  Supervisors can always review pending alerts under the <em className="font-semibold">Team Performance</em> tab, checking representational status displays and completing manual clearances if a specific team member is working on complex support tickets.
+                <div className="p-3 border border-status-attention-text/20 bg-status-attention-bg rounded-[3px] text-status-attention-text text-[11px] leading-relaxed">
+                  <strong className="font-bold block mb-0.5">Manager Action Overrides</strong>
+                  Operations leads can review pending alerts under the <em className="font-semibold">Team Performance</em> tab, verifying representational states or clearing employee alerts manually.
                 </div>
               </div>
             )}
 
             {activeTab === 'faq' && (
               <div className="flex flex-col gap-3 animate-fadeIn">
-                <h4 className="font-bold text-[12.5px] text-text-charcoal mb-1 flex items-center gap-1.5 uppercase tracking-wide">
-                  <FileText className="w-4 h-4 text-accent-blue" />
-                  Operations Frequently Asked Questions
+                <h4 className="font-bold text-[12px] text-text-charcoal mb-1 flex items-center gap-1.5 uppercase tracking-wide">
+                  <FileText className="w-3.5 h-3.5 text-accent-blue" />
+                  Operations FAQ
                 </h4>
                 
                 <div className="flex flex-col border border-border-soft rounded-[3px] divide-y divide-border-soft">
@@ -447,13 +447,13 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
                         <button
                           type="button"
                           onClick={() => setExpandedFaq(isExpanded ? null : idx)}
-                          className="w-full text-left p-3 flex items-center justify-between font-bold text-[12px] text-text-charcoal hover:bg-sidebar-bg/25 transition-all outline-none cursor-pointer select-none"
+                          className="w-full text-left p-3 flex items-center justify-between font-bold text-[11.5px] text-text-charcoal hover:bg-sidebar-bg/25 transition-all outline-none cursor-pointer select-none"
                         >
                           <span>{faq.q}</span>
-                          <span className="text-[14px] text-text-muted font-mono shrink-0 ml-2">{isExpanded ? '−' : '+'}</span>
+                          <span className="text-[12px] text-text-muted font-mono shrink-0 ml-2">{isExpanded ? '−' : '+'}</span>
                         </button>
                         {isExpanded && (
-                          <div className="p-3 pt-0 text-[11.5px] text-text-muted leading-relaxed font-normal bg-sidebar-bg/10 animate-fadeIn font-sans">
+                          <div className="p-3 pt-0 text-[11px] text-text-muted leading-relaxed font-normal bg-sidebar-bg/10 animate-fadeIn font-sans">
                             {faq.a}
                           </div>
                         )}
@@ -472,7 +472,7 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
           <button
             type="button"
             onClick={onClose}
-            className="w-full h-10 bg-accent-blue hover:opacity-95 active:scale-[0.99] text-canvas-bg hover:brightness-110 text-[12.5px] font-bold rounded-[3px] flex items-center justify-center gap-1.5 cursor-pointer shadow-sm select-none transition-all"
+            className="w-full h-10 bg-accent-blue hover:opacity-95 active:scale-[0.99] text-canvas-bg hover:brightness-110 text-[12px] font-bold rounded-[3px] flex items-center justify-center gap-1.5 cursor-pointer shadow-sm select-none transition-all"
           >
             Acknowledge & Close Help Desk
           </button>
@@ -521,7 +521,7 @@ export function LayoutShell({ children }: LayoutShellProps) {
               href="https://tekguyz.com" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="inline-flex items-center px-2 py-0.5 rounded-[3px] bg-accent-blue text-canvas-bg dark:text-text-charcoal font-bold tracking-tight text-[10px] hover:brightness-110 active:scale-95 transition-all outline-none"
+              className="inline-flex items-center px-2 py-0.5 rounded-[3px] bg-[#0052cc] dark:bg-[#1f6feb] text-white font-bold tracking-tight text-[10px] hover:brightness-110 active:scale-95 transition-all outline-none shadow-xs"
             >
               TEKGUYZ
             </a>

@@ -136,18 +136,18 @@ export default function ViewPerformance({
                 <td className="p-2.5 font-mono border-r border-border-soft text-center text-[12px] font-bold">{a.calculatedFocus}%</td>
                 <td className="p-2.5 pl-4 flex items-center min-h-[44px]">
                   {a.calculatedFocus >= 40 ? (
-                    <StatusTag className="bg-status-verified-bg text-status-verified-text border border-status-verified-bg/20 select-none">
+                    <StatusTag className="bg-status-verified-bg text-status-verified-text border border-status-verified-text/10 select-none">
                       <ShieldCheck className="w-3 h-3 shrink-0 text-status-verified-text mr-1 inline" />
-                      Verified
+                      VERIFIED
                     </StatusTag>
                   ) : (
                     <button
                       onClick={() => setSelectedAgent(a)}
                       type="button"
-                      className="h-6 px-2.5 inline-flex items-center gap-1 rounded-[3px] text-[9.5px] font-bold uppercase tracking-wider transition-all bg-status-attention-bg hover:opacity-90 text-status-attention-text border border-status-attention-text/20 cursor-pointer shadow-3xs"
+                      className="h-6 px-2.5 inline-flex items-center gap-1 rounded-[3px] text-[9.5px] font-bold uppercase tracking-wider transition-all bg-status-attention-bg hover:opacity-90 text-status-attention-text border border-status-attention-text/10 cursor-pointer shadow-3xs"
                     >
                       <ShieldAlert className="w-3 h-3 shrink-0 text-status-attention-text" />
-                      <span>Attention Needed</span>
+                      <span>REVIEW REQUIRED</span>
                     </button>
                   )}
                 </td>
@@ -172,7 +172,7 @@ export default function ViewPerformance({
                   </div>
                   <div>
                     <h3 className="font-bold text-[14px] text-text-charcoal tracking-tight">Review Representative</h3>
-                    <p className="text-[10px] text-text-muted font-semibold uppercase mt-0.5 animate-pulse">Attention Needed</p>
+                    <p className="text-[10px] text-text-muted font-semibold uppercase mt-0.5 animate-pulse">REVIEW REQUIRED</p>
                   </div>
                 </div>
                 <button 
