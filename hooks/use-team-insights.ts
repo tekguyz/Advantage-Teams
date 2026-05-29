@@ -10,7 +10,7 @@ import {
   MASTER_AGENTS, 
   DEFAULT_MAPPINGS 
 } from '@/types/data-matrix';
-import { ExtensionMapSchema } from '@/validation-schemas';
+import { ExtensionMapSchema } from '@/utils/validation-schemas';
 
 function sortedCollection<T>(list: T[], key: keyof T | string, order: string): T[] {
   if (!key) return list;

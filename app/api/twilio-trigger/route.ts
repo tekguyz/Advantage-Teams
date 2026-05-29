@@ -1,7 +1,7 @@
-// route-twilio-trigger.ts
+// app/api/twilio-trigger/route.ts
 // Next.js 15 route handler that simulates external systems triggering the Survey Bridge.
 import { NextRequest, NextResponse } from 'next/server';
-import { MASTER_AGENTS } from './types/data-matrix';
+import { MASTER_AGENTS } from '@/types/data-matrix';
 
 // Sleep helper to simulate network lag
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
