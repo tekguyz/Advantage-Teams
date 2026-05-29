@@ -106,3 +106,126 @@ export function SortArrow({ active, order }: SortArrowProps) {
     ? <ArrowUp className="w-3 h-3 text-accent-blue ml-1.5 shrink-0 inline-block font-extrabold" />
     : <ArrowDown className="w-3 h-3 text-accent-blue ml-1.5 shrink-0 inline-block font-extrabold" />;
 }
+
+/**
+ * Reusable Jira-style Status Tag component with responsive design tokens.
+ */
+export function StatusTag({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <span className={`status-tag-base ${className}`}>
+      {children}
+    </span>
+  );
+}
+
+/**
+ * Reusable Jira-style Metric Badge helper.
+ */
+export function MetricBadge({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <span className={`metric-badge-base ${className}`}>
+      {children}
+    </span>
+  );
+}
+
+/**
+ * 4 Distinct Survey Center data counters (All Rows, Sent, Skipped, Duplicate)
+ */
+interface CounterProps {
+  count: number;
+  active: boolean;
+  onClick: () => void;
+}
+
+export function AllRowsCounter({ count, active, onClick }: CounterProps) {
+  return (
+    <button
+      onClick={onClick}
+      type="button"
+      className={`p-3 bg-canvas-bg border rounded-[3px] flex flex-col items-start transition-all cursor-pointer text-left w-full ${
+        active 
+          ? 'border-accent-blue bg-border-soft/30 font-bold' 
+          : 'border-border-soft hover:bg-sidebar-bg/30'
+      }`}
+    >
+      <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">All Rows</span>
+      <div className="badge-container-grid mt-1.5">
+        <span className="text-[16px] font-bold text-text-charcoal">{count}</span>
+        <MetricBadge className="bg-status-neutral-bg text-status-neutral-text">Registers</MetricBadge>
+      </div>
+    </button>
+  );
+}
+
+export function SentCounter({ count, active, onClick }: CounterProps) {
+  return (
+    <button
+      onClick={onClick}
+      type="button"
+      className={`p-3 bg-canvas-bg border rounded-[3px] flex flex-col items-start transition-all cursor-pointer text-left w-full ${
+        active 
+          ? 'border-accent-blue bg-border-soft/30 font-bold' 
+          : 'border-border-soft hover:bg-sidebar-bg/30'
+      }`}
+    >
+      <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Sent Logs</span>
+      <div className="badge-container-grid mt-1.5">
+        <span className="text-[16px] font-bold text-status-verified-text">{count}</span>
+        <MetricBadge className="bg-status-verified-bg text-status-verified-text">Dispatched</MetricBadge>
+      </div>
+    </button>
+  );
+}
+
+export function SkippedCounter({ count, active, onClick }: CounterProps) {
+  return (
+    <button
+      onClick={onClick}
+      type="button"
+      className={`p-3 bg-canvas-bg border rounded-[3px] flex flex-col items-start transition-all cursor-pointer text-left w-full ${
+        active 
+          ? 'border-accent-blue bg-border-soft/30 font-bold' 
+          : 'border-border-soft hover:bg-sidebar-bg/30'
+      }`}
+    >
+      <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Skipped</span>
+      <div className="badge-container-grid mt-1.5">
+        <span className="text-[16px] font-bold text-status-skipped-text">{count}</span>
+        <MetricBadge className="bg-status-skipped-bg text-status-skipped-text">Suppressed</MetricBadge>
+      </div>
+    </button>
+  );
+}
+
+export function DuplicateCounter({ count, active, onClick }: CounterProps) {
+  return (
+    <button
+      onClick={onClick}
+      type="button"
+      className={`p-3 bg-canvas-bg border rounded-[3px] flex flex-col items-start transition-all cursor-pointer text-left w-full ${
+        active 
+          ? 'border-accent-blue bg-border-soft/30 font-bold' 
+          : 'border-border-soft hover:bg-sidebar-bg/30'
+      }`}
+    >
+      <span className="text-[10px] font-bold uppercase tracking-wider text-text-muted">Duplicate</span>
+      <div className="badge-container-grid mt-1.5">
+        <span className="text-[16px] font-bold text-status-attention-text">{count}</span>
+        <MetricBadge className="bg-status-attention-bg text-status-attention-text">Duplicate</MetricBadge>
+      </div>
+    </button>
+  );
+}

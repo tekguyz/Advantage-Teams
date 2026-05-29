@@ -1,31 +1,53 @@
 @import "tailwindcss";
 
 :root {
+  /* Core Surface & Text Canvas */
   --canvas-bg: #ffffff;
   --sidebar-bg: #f4f5f7;
   --border-soft: #dfe1e6;
   --text-charcoal: #172b4d;
-  --text-muted: #5e6c84;
+  --text-muted: #44546f; /* Enhanced contrast from #5e6c84 to meet WCAG AA 4.5:1 */
+  
+  /* Brand Landmark Palette */
   --accent-blue: #0052cc;
   --accent-blue-hover: #0747a6;
   
+  /* Semantic Status & Quad-Badge Metric Colors */
+  --status-neutral-bg: #f4f5f7;
+  --status-neutral-text: #44546f;
+  
   --status-verified-bg: #e3fcef;
   --status-verified-text: #006644;
+  
+  --status-skipped-bg: #fffae6; /* Clean Amber/Yellow utility for filtered items */
+  --status-skipped-text: #b35b00;
+  
   --status-attention-bg: #ffebe6;
   --status-attention-text: #bf2600;
 }
 
 html.dark {
+  /* Core Surface & Text Canvas */
   --canvas-bg: #0d1117;
   --sidebar-bg: #161b22;
   --border-soft: #30363d;
   --text-charcoal: #f0f6fc;
   --text-muted: #8b949e;
+  
+  /* Brand Landmark Palette */
   --accent-blue: #58a6ff;
   --accent-blue-hover: #1f6feb;
   
+  /* Semantic Status & Quad-Badge Metric Colors */
+  --status-neutral-bg: #21262d;
+  --status-neutral-text: #c9d1d9;
+  
   --status-verified-bg: #1f3a2b;
   --status-verified-text: #57d9a3;
+  
+  --status-skipped-bg: #3a2e12;
+  --status-skipped-text: #f1b44c;
+  
   --status-attention-bg: #3d1d1d;
   --status-attention-text: #ff8f73;
 }
@@ -39,8 +61,12 @@ html.dark {
   --color-accent-blue: var(--accent-blue);
   --color-accent-blue-hover: var(--accent-blue-hover);
   
+  --color-status-neutral-bg: var(--status-neutral-bg);
+  --color-status-neutral-text: var(--status-neutral-text);
   --color-status-verified-bg: var(--status-verified-bg);
   --color-status-verified-text: var(--status-verified-text);
+  --color-status-skipped-bg: var(--status-skipped-bg);
+  --color-status-skipped-text: var(--status-skipped-text);
   --color-status-attention-bg: var(--status-attention-bg);
   --color-status-attention-text: var(--status-attention-text);
 }
@@ -48,12 +74,13 @@ html.dark {
 body {
   background-color: var(--canvas-bg);
   color: var(--text-charcoal);
-  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
   font-size: 13px;
   line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Jira Cloud clean micro inputs */
+/* Jira Cloud Clean Micro Inputs */
 input, select, textarea {
   outline: none;
   font-family: inherit;
@@ -64,7 +91,7 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 1px var(--accent-blue);
 }
 
-/* Compact low-density workspace scrollbar styles */
+/* Compact Low-Density Workspace Scrollbar Styles */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -81,4 +108,33 @@ input:focus, select:focus, textarea:focus {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
+}
+
+/* Base Component Badges & Status Tags Matrix */
+.badge-container-grid {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.metric-badge-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 3px;
+  line-height: 1;
+}
+
+.status-tag-base {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }

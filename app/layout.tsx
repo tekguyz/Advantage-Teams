@@ -3,10 +3,32 @@ import './globals.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://advantage-teams.vercel.app/'),
-  title: 'Advantage Teams Workspace',
-  description: 'Clean high-density enterprise operations console and performance matrix tracker',
+  title: 'Advantage Software Workspace',
+  description: 'Operations console bridging hardware telephony registers with Zoho CRM accounts.',
   icons: {
-    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 L95 50 L50 95 L5 50 Z' fill='none' stroke='currentColor' stroke-width='4'/%3E%3Cpath d='M50 5 Q50 50 95 50 Q50 50 50 95 Q50 50 5 50 Q50 50 50 5' fill='currentColor' opacity='0.15'/%3E%3Ccircle cx='50' cy='50' r='18' fill='%230052cc'/%3E%3C/svg%3E",
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230052cc'/%3E%3Cpath d='M50 16 L84 50 L50 84 L16 50 Z' fill='%23ffffff'/%3E%3Cpath d='M50 30 L70 50 L50 70 L30 50 Z' fill='%230052cc'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%23fffae6'/%3E%3C/svg%3E",
+  },
+  openGraph: {
+    title: 'Advantage Software Workspace',
+    description: 'Operations console bridging hardware telephony registers with Zoho CRM accounts.',
+    url: 'https://advantage-teams.vercel.app/dashboard',
+    siteName: 'Advantage Software',
+    images: [
+      {
+        url: 'https://advantage-teams.vercel.app/api/og',
+        width: 1200,
+        height: 630,
+        alt: 'Advantage Software Operations Console',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Advantage Software Workspace',
+    description: 'Operations console bridging hardware telephony registers with Zoho CRM accounts.',
+    images: ['https://advantage-teams.vercel.app/api/og'],
   },
 };
 

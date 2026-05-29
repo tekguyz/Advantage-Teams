@@ -12,7 +12,7 @@ export default function DashboardPage() {
         <div className="flex w-full h-full min-h-screen items-center justify-center font-sans text-[12px] text-[#5e6c84] bg-white">
           <div className="flex items-center gap-2">
             <span className="w-4 h-4 border-2 border-[#0052cc] border-t-transparent rounded-full animate-spin" />
-            <span>Loading Advantage Teams Workspace...</span>
+            <span>Loading Advantage Software Workspace...</span>
           </div>
         </div>
       }

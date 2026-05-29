@@ -23,7 +23,7 @@ export async function GET() {
         </svg>
 
         <div style={{ fontSize: '56px', fontWeight: 'bold', color: '#172b4d', letterSpacing: '-0.02em' }}>
-          Advantage Teams
+          Advantage Software
         </div>
 
         <div style={{ fontSize: '24px', color: '#5e6c84', marginTop: '16px' }}>

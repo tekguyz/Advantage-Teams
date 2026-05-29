@@ -4,7 +4,16 @@
 
 import React, { useState, useMemo } from 'react';
 import { Play, Download, RefreshCw } from 'lucide-react';
-import { Tooltip, Toast, SortArrow } from '@/components/ui/component-feedback';
+import { 
+  AllRowsCounter, 
+  SentCounter, 
+  SkippedCounter, 
+  DuplicateCounter,
+  StatusTag,
+  Tooltip,
+  Toast,
+  SortArrow 
+} from '@/components/ui/component-feedback';
 import { ExtensionMapping, generateSimulationRecords, CallEvent } from '@/types/data-matrix';
 
 interface ViewSurveysProps {
@@ -30,19 +39,16 @@ export default function ViewSurveys({
     setCalls([]); 
     await new Promise(r => setTimeout(r, 400));
     setCalls(generateSimulationRecords());
-    setToastMsg("Simulation Complete: 300 Records Analyzed.");
+    setToastMsg("Simulation Complete: 300 Events Analyzed.");
     setIsSimulating(false);
   };
 
   const handleCSVExport = () => {
     if (typeof window !== 'undefined') {
-      const confirmed = window.confirm("Confirm download of twilio_outbound_delivery_log.csv? (Contains exactly 300 logs)");
-      if (!confirmed) return;
-
       const header = "Timestamp,Extension,Representative Name,Customer Number,Duration,Status\n";
       const rows = calls.map(c => {
         const rep = mappings.find(m => m.extension === c.agent_extension)?.mappedName || `Ext ${c.agent_extension}`;
-        const s = c.delivery_status === 'Sent' ? 'Sent' : (c.delivery_status === 'Skipped: Under 2 Minutes' ? 'Skipped: Short' : 'Duplicate');
+        const s = c.delivery_status === 'Sent' ? 'Sent' : (c.delivery_status === 'Skipped: Under 2 Minutes' ? 'Skipped' : 'Duplicate');
         return `"${c.processed_at}","Ext ${c.agent_extension}","${rep}","${c.customer_phone}",${c.call_duration_seconds},"${s}"`;
       }).join("\n");
 
@@ -87,7 +93,7 @@ export default function ViewSurveys({
     <div className="flex flex-col gap-5 animate-fadeIn text-left">
       {toastMsg && <Toast message={toastMsg} type="success" onClose={() => setToastMsg(null)} />}
 
-      <div className="bg-canvas-bg border border-border-soft rounded-[3px] p-4 flex flex-col md:flex-row md:items-center md:justify-between justify-between gap-4">
+      <div className="bg-canvas-bg border border-border-soft rounded-[3px] p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <Tooltip content="Outbound text dispatches check call durations and caps before launching.">
             <h2 className="text-[14px] font-bold text-text-charcoal border-b border-dashed border-border-soft/80 pb-0.5 inline-block select-none">
@@ -102,6 +108,7 @@ export default function ViewSurveys({
         <button
           onClick={handleSimulation}
           disabled={isSimulating}
+          type="button"
           className="h-8 px-4 bg-accent-blue hover:opacity-90 disabled:bg-accent-blue/70 text-canvas-bg text-[12px] font-bold rounded-[3px] flex items-center gap-1.5 transition-all cursor-pointer shrink-0 shadow-sm"
         >
           {isSimulating ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5 fill-white text-canvas-bg" />}
@@ -109,22 +116,11 @@ export default function ViewSurveys({
         </button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 select-none">
-        {[
-          { label: "All Rows", count: `${countAll} Registers`, filter: 'all', style: 'border-border-soft' },
-          { label: "Sent Logs", count: `${countSent} Dispatched`, filter: 'sent', style: 'text-status-verified-text border-status-verified-bg' },
-          { label: "Skipped: Short", count: `${countSkipped} Suppressed`, filter: 'skipped', style: 'text-text-charcoal' },
-          { label: "Duplicate", count: `${countDuplicate} Filtered`, filter: 'duplicate', style: 'text-status-attention-text' },
-        ].map(b => (
-          <button 
-            key={b.filter}
-            onClick={() => setActiveFilter(b.filter as any)}
-            className={`p-3 bg-canvas-bg border rounded-[3px] flex flex-col items-start transition-all cursor-pointer text-left ${activeFilter === b.filter ? 'border-accent-blue bg-border-soft/30' : 'border-border-soft hover:bg-sidebar-bg/30'}`}
-          >
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-text-muted">{b.label}</span>
-            <span className={`text-[16px] font-bold mt-1 ${b.style}`}>{b.count}</span>
-          </button>
-        ))}
+      <div className="badge-container-grid select-none grid grid-cols-2 lg:grid-cols-4 w-full gap-3">
+        <AllRowsCounter count={countAll} active={activeFilter === 'all'} onClick={() => setActiveFilter('all')} />
+        <SentCounter count={countSent} active={activeFilter === 'sent'} onClick={() => setActiveFilter('sent')} />
+        <SkippedCounter count={countSkipped} active={activeFilter === 'skipped'} onClick={() => setActiveFilter('skipped')} />
+        <DuplicateCounter count={countDuplicate} active={activeFilter === 'duplicate'} onClick={() => setActiveFilter('duplicate')} />
       </div>
 
       <div className="bg-canvas-bg border border-border-soft rounded-[3px] p-4 shadow-xs">
@@ -145,17 +141,17 @@ export default function ViewSurveys({
             <tbody className="divide-y divide-border-soft text-text-charcoal bg-canvas-bg">
               {calls.slice(0, 5).map((log, i) => {
                 const rep = mappings.find(m => m.extension === log.agent_extension)?.mappedName || `Ext ${log.agent_extension}`;
-                const labelColor = log.delivery_status === 'Sent' ? 'bg-status-verified-bg text-status-verified-text' : 'bg-status-attention-bg text-status-attention-text';
-                const labelText = log.delivery_status === 'Sent' ? 'Sent' : (log.delivery_status === 'Skipped: Under 2 Minutes' ? 'Skipped: Short' : 'Duplicate');
+                const labelClass = log.delivery_status === 'Sent' 
+                  ? 'bg-status-verified-bg text-status-verified-text' 
+                  : (log.delivery_status === 'Skipped: Under 2 Minutes' ? 'bg-status-skipped-bg text-status-skipped-text' : 'bg-status-attention-bg text-status-attention-text');
+                const labelText = log.delivery_status === 'Sent' ? 'Sent' : (log.delivery_status === 'Skipped: Under 2 Minutes' ? 'Skipped' : 'Duplicate');
                 return (
                   <tr key={i} className="hover:bg-sidebar-bg/20 transition-all font-medium">
                     <td className="p-2.5 pl-4 border-r border-border-soft font-bold">{rep} <span className="font-mono text-text-muted font-normal text-[9.5px] ml-1.5">(Ext {log.agent_extension})</span></td>
                     <td className="p-2.5 border-r border-border-soft font-mono text-text-muted">{log.customer_phone}</td>
                     <td className="p-2.5 border-r border-border-soft text-center font-mono text-text-muted">{log.call_duration_seconds}s</td>
                     <td className="p-2.5 pl-4">
-                      <span className={`px-2 py-0.5 rounded-[3px] text-[9px] font-bold uppercase ${labelColor}`}>
-                        {labelText}
-                      </span>
+                      <StatusTag className={labelClass}>{labelText}</StatusTag>
                     </td>
                   </tr>
                 );
@@ -175,6 +171,7 @@ export default function ViewSurveys({
           </h3>
           <button 
             onClick={handleCSVExport}
+            type="button"
             className="h-7 px-3 border border-border-soft hover:border-text-muted text-text-charcoal text-[11px] font-bold bg-canvas-bg hover:bg-sidebar-bg rounded-[3px] flex items-center gap-1.5 transition-all cursor-pointer select-none"
           >
             <Download className="w-3.5 h-3.5" /> Export Table to CSV
@@ -183,7 +180,7 @@ export default function ViewSurveys({
 
         <div className="max-h-[350px] overflow-y-auto border border-border-soft rounded-[3px]">
           <table className="w-full text-left border-collapse text-[11px]">
-            <thead className="bg-sidebar-bg sticky top-0 z-10 border-b border-border-soft text-text-muted font-bold uppercase text-[9px] select-none shadow-[0_1px_0_0_rgba(223,225,230,1)] dark:shadow-[0_1px_0_0_rgba(48,54,61,1)]">
+            <thead className="bg-sidebar-bg sticky top-0 z-10 border-b border-border-soft text-text-muted font-bold uppercase text-[9px] select-none">
               <tr>
                 <th onClick={() => onSort('processed_at')} className="p-2 cursor-pointer hover:bg-border-soft/40 transition-colors border-r border-border-soft pl-3">Timestamp <SortArrow active={sortBy === 'processed_at'} order={order} /></th>
                 <th onClick={() => onSort('customer_phone')} className="p-2 cursor-pointer hover:bg-border-soft/40 transition-colors border-r border-border-soft">Customer Number <SortArrow active={sortBy === 'customer_phone'} order={order} /></th>
@@ -195,7 +192,10 @@ export default function ViewSurveys({
             <tbody className="divide-y divide-border-soft bg-canvas-bg text-text-charcoal">
               {filteredCalls.map((log, i) => {
                 const rep = mappings.find(m => m.extension === log.agent_extension)?.mappedName || `Ext ${log.agent_extension}`;
-                const finalStatus = log.delivery_status === 'Sent' ? 'Sent' : (log.delivery_status === 'Skipped: Under 2 Minutes' ? 'Skipped: Short' : 'Duplicate');
+                const finalStatus = log.delivery_status === 'Sent' ? 'Sent' : (log.delivery_status === 'Skipped: Under 2 Minutes' ? 'Skipped' : 'Duplicate');
+                const finalColor = log.delivery_status === 'Sent' 
+                  ? 'bg-status-verified-bg text-status-verified-text' 
+                  : (log.delivery_status === 'Skipped: Under 2 Minutes' ? 'bg-status-skipped-bg text-status-skipped-text' : 'bg-status-attention-bg text-status-attention-text');
                 return (
                   <tr key={i} className="hover:bg-sidebar-bg/20 transition-all font-medium">
                     <td className="p-2 pl-3 border-r border-border-soft font-mono text-text-muted">{new Date(log.processed_at).toLocaleTimeString()}</td>
@@ -203,9 +203,7 @@ export default function ViewSurveys({
                     <td className="p-2 border-r border-border-soft text-center font-mono">Ext {log.agent_extension}</td>
                     <td className="p-2 border-r border-border-soft">{rep}</td>
                     <td className="p-2 pl-3">
-                      <span className={`px-2 py-0.5 rounded-[3px] text-[9px] font-bold uppercase ${log.delivery_status === 'Sent' ? 'bg-status-verified-bg text-status-verified-text' : 'bg-status-attention-bg text-status-attention-text'}`}>
-                        {finalStatus}
-                      </span>
+                      <StatusTag className={finalColor}>{finalStatus}</StatusTag>
                     </td>
                   </tr>
                 );

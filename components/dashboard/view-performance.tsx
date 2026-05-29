@@ -3,10 +3,9 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { Cpu, Users, ShieldAlert } from 'lucide-react';
+import { Cpu, Users, ShieldAlert, ShieldCheck, X } from 'lucide-react';
 import { AgentPerformance } from '@/types/data-matrix';
-import { SortArrow, Toast, Tooltip } from '@/components/ui/component-feedback';
-import { SlideOutDrawer } from '@/components/ui/slide-out-drawer';
+import { SortArrow, Toast, Tooltip, StatusTag } from '@/components/ui/component-feedback';
 
 interface ViewPerformanceProps {
   initialAgents: AgentPerformance[];
@@ -33,7 +32,6 @@ export default function ViewPerformance({
       return {
         ...agent,
         calculatedFocus,
-        derivedStatusTag: calculatedFocus >= 40 ? 'Standard' : 'Review Required',
       };
     });
   }, [agents]);
@@ -50,9 +48,7 @@ export default function ViewPerformance({
       else if (key === 'focus') { valA = a.calculatedFocus; valB = b.calculatedFocus; }
       
       if (typeof valA === 'string') {
-        return order === 'asc' 
-          ? valA.localeCompare(valB) 
-          : valB.localeCompare(valA);
+        return order === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
       }
       return order === 'asc' ? valA - valB : valB - valA;
     });
@@ -67,7 +63,7 @@ export default function ViewPerformance({
       durationMins: Math.max(5, agent.durationMins + (Math.random() > 0.5 ? 5 : -5)),
     })));
     setIsAuditing(false);
-    setAuditToast("AI Compliance Audit Complete: Evaluated exactly 12 support professionals.");
+    setAuditToast("Audit Complete: Verified all synced communication logs.");
   };
 
   const clearAlert = (agentId: string) => {
@@ -78,7 +74,7 @@ export default function ViewPerformance({
       return a;
     }));
     setSelectedAgent(null);
-    setAuditToast("Verification alert cleared. Representative focus density overrode compliance baseline.");
+    setAuditToast("Representative focus density cleared manually. Activity status updated.");
   };
 
   return (
@@ -91,11 +87,12 @@ export default function ViewPerformance({
             <Users className="w-4 h-4 text-accent-blue" /> Team Performance Workspace
           </h2>
           <p className="text-[11.5px] text-text-muted mt-0.5">
-            Real-time corporate Focus Ratings matching device extension sync records under Zoho accounts.
+            Real-time operations dashboard matching handset activities into corporate profiles.
           </p>
         </div>
         <button
           onClick={handleAIAudit} disabled={isAuditing}
+          type="button"
           className="h-8 px-3.5 bg-accent-blue hover:opacity-90 disabled:bg-accent-blue/70 text-canvas-bg text-[11px] font-bold rounded-[3px] flex items-center gap-1.5 transition-all cursor-pointer shadow-sm select-none"
         >
           {isAuditing ? <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Cpu className="w-3.5 h-3.5" />}
@@ -107,21 +104,22 @@ export default function ViewPerformance({
         <table className="w-full text-left border-collapse text-[11.5px]">
           <thead className="bg-sidebar-bg border-b border-border-soft text-text-muted font-bold text-[9px] uppercase select-none">
             <tr>
-              <th onClick={() => onSort('representative')} className="p-2.5 cursor-pointer hover:bg-border-soft/40 transition-all border-r border-border-soft pl-4 min-w-[160px]">
-                REPRESENTATIVE NAME <SortArrow active={sortBy === 'representative'} order={order} />
+              <th onClick={() => onSort('representative')} className="p-2.5 cursor-pointer hover:bg-border-soft/40 transition-all border-r border-border-soft pl-4 min-w-[165px]">
+                Representative Name <SortArrow active={sortBy === 'representative'} order={order} />
               </th>
               <th onClick={() => onSort('duration')} className="p-2.5 cursor-pointer hover:bg-border-soft/40 transition-all border-r border-border-soft text-center min-w-[110px]">
-                OFFLINE DURATION <SortArrow active={sortBy === 'duration'} order={order} />
+                Offline Duration <SortArrow active={sortBy === 'duration'} order={order} />
               </th>
-              <th onClick={() => onSort('updates')} className="p-2.5 cursor-pointer hover:bg-border-soft/40 transition-all border-r border-border-soft text-center min-w-[120px]">
-                SYSTEM UPDATES <SortArrow active={sortBy === 'updates'} order={order} />
+              <th onClick={() => onSort('updates')} className="p-2.5 cursor-pointer hover:bg-border-soft/40 transition-all border-r border-border-soft text-center min-w-[125px]">
+                System Updates <SortArrow active={sortBy === 'updates'} order={order} />
               </th>
-              <th onClick={() => onSort('focus')} className="p-2.5 cursor-pointer hover:bg-border-soft/40 transition-all text-left pl-4 min-w-[140px]">
-                <Tooltip content="Focus rating calculates the ratio of recorded system updates relative to offline duration.">
-                  <span className="text-[10px] font-extrabold tracking-wider select-none">CALCULATED FOCUS RATING</span>
+              <th onClick={() => onSort('focus')} className="p-2.5 cursor-pointer hover:bg-border-soft/40 transition-all border-r border-border-soft text-center min-w-[155px]">
+                <Tooltip content="Calculated Focus Rating measures logged workspace operations over durations.">
+                  <span className="text-[10px] font-bold tracking-wider select-none">Calculated Focus Rating</span>
                 </Tooltip>
                 {" "}<SortArrow active={sortBy === 'focus'} order={order} />
               </th>
+              <th className="p-2.5 pl-4 text-left min-w-[130px]">Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border-soft font-normal text-text-charcoal bg-canvas-bg">
@@ -130,24 +128,26 @@ export default function ViewPerformance({
                 <td className="p-2.5 font-bold border-r border-border-soft pl-4">
                   <div className="flex flex-col">
                     <span>{a.name}</span>
-                    <span className="text-[9.5px] text-text-muted font-mono leading-none mt-0.5 font-normal">Ext {a.extension} • ID: {a.zohoId || 'Unmapped'}</span>
+                    <span className="text-[9.5px] text-text-muted font-mono leading-none mt-0.5 font-normal">Extension {a.extension} • ID: {a.zohoId || 'Unmapped'}</span>
                   </div>
                 </td>
                 <td className="p-2.5 font-mono text-text-muted border-r border-border-soft text-center">{a.durationMins} minutes</td>
                 <td className="p-2.5 font-mono text-center border-r border-border-soft">{a.systemUpdates} operations</td>
-                <td className="p-2.5 pl-4 flex items-center gap-3 min-h-[44px]">
-                  <span className="font-mono font-bold text-[12px]">{a.calculatedFocus}%</span>
+                <td className="p-2.5 font-mono border-r border-border-soft text-center text-[12px] font-bold">{a.calculatedFocus}%</td>
+                <td className="p-2.5 pl-4 flex items-center min-h-[44px]">
                   {a.calculatedFocus >= 40 ? (
-                    <span className="px-2 py-0.5 rounded-[3px] text-[9.5px] font-bold uppercase tracking-wider bg-status-verified-bg text-status-verified-text border border-status-verified-bg/20 select-none">
+                    <StatusTag className="bg-status-verified-bg text-status-verified-text border border-status-verified-bg/20 select-none">
+                      <ShieldCheck className="w-3 h-3 shrink-0 text-status-verified-text mr-1 inline" />
                       Verified
-                    </span>
+                    </StatusTag>
                   ) : (
                     <button
                       onClick={() => setSelectedAgent(a)}
-                      className="px-2.5 py-1 rounded-[3px] text-[9.5px] font-bold uppercase tracking-wider text-left transition-all flex items-center gap-1.5 bg-status-attention-bg hover:opacity-90 text-status-attention-text border border-status-attention-text/20 cursor-pointer shadow-3xs"
+                      type="button"
+                      className="h-6 px-2.5 inline-flex items-center gap-1 rounded-[3px] text-[9.5px] font-bold uppercase tracking-wider transition-all bg-status-attention-bg hover:opacity-90 text-status-attention-text border border-status-attention-text/20 cursor-pointer shadow-3xs"
                     >
-                      <ShieldAlert className="w-3.5 h-3.5" />
-                      <span>Review</span>
+                      <ShieldAlert className="w-3 h-3 shrink-0 text-status-attention-text" />
+                      <span>Attention Needed</span>
                     </button>
                   )}
                 </td>
@@ -157,12 +157,87 @@ export default function ViewPerformance({
         </table>
       </div>
 
-      <SlideOutDrawer 
-        isOpen={!!selectedAgent}
-        onClose={() => setSelectedAgent(null)}
-        agent={selectedAgent}
-        onClearAlert={clearAlert}
-      />
+      {selectedAgent && (
+        <div className="fixed inset-0 z-50 flex justify-end">
+          <div 
+            className="absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-200" 
+            onClick={() => setSelectedAgent(null)} 
+          />
+          <div className="relative w-full max-w-[390px] h-full bg-canvas-bg shadow-2xl flex flex-col justify-between border-l border-border-soft z-50 p-6 text-left animate-slideIn transition-colors duration-150">
+            <div className="flex-1 overflow-y-auto pr-1 text-[12px]">
+              <div className="flex items-center justify-between border-b border-border-soft pb-4 mb-5">
+                <div className="flex items-center gap-2">
+                  <div className="bg-status-attention-bg p-1.5 rounded-[3px] text-status-attention-text">
+                    <ShieldAlert className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-[14px] text-text-charcoal tracking-tight">Review Representative</h3>
+                    <p className="text-[10px] text-text-muted font-semibold uppercase mt-0.5 animate-pulse">Attention Needed</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setSelectedAgent(null)} 
+                  type="button"
+                  className="p-1.5 text-text-muted hover:text-text-charcoal rounded-[3px] hover:bg-border-soft/40 transition-colors cursor-pointer"
+                  aria-label="Close"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-4">
+                <div className="bg-sidebar-bg border border-border-soft/60 p-4 rounded-[3px]">
+                  <span className="text-[9.5px] text-text-muted font-bold uppercase tracking-wider block mb-1">Representative Profile</span>
+                  <span className="text-[14.5px] font-bold text-text-charcoal block">{selectedAgent.name}</span>
+                  <div className="flex gap-2.5 mt-2.5 pt-2.5 border-t border-border-soft/50 text-[11px] text-text-muted font-medium">
+                    <span>Extension: <strong className="font-mono text-text-charcoal">{selectedAgent.extension}</strong></span>
+                    <span className="text-border-soft">|</span>
+                    <span>CRM ID: <strong className="font-mono text-text-charcoal">{selectedAgent.zohoId || 'N/A'}</strong></span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="border border-border-soft p-3 rounded-[3px] bg-canvas-bg text-center shadow-3xs">
+                    <span className="text-[9px] text-text-muted font-bold uppercase block mb-0.5">Offline Duration</span>
+                    <span className="text-[14px] font-mono font-bold text-text-charcoal">{selectedAgent.durationMins}m</span>
+                  </div>
+                  <div className="border border-border-soft p-3 rounded-[3px] bg-canvas-bg text-center shadow-3xs">
+                    <span className="text-[9px] text-text-muted font-bold uppercase block mb-0.5">System Updates</span>
+                    <span className="text-[14px] font-mono font-bold text-text-charcoal">{selectedAgent.systemUpdates} ops</span>
+                  </div>
+                </div>
+
+                <div className="bg-status-attention-bg border border-status-attention-text/20 p-4 rounded-[3px] text-status-attention-text leading-relaxed">
+                  <strong className="font-semibold block mb-1.5 text-[11.5px]">Performance Warning Logs</strong>
+                  <p className="text-[11.5px] mb-2 leading-relaxed">
+                    This representative logged only <strong className="font-bold">{selectedAgent.systemUpdates} workspace operations</strong> across <strong className="font-bold">{selectedAgent.durationMins} minutes</strong> of communication activity.
+                  </p>
+                  <p className="text-[11.5px] leading-relaxed">
+                    This evaluates to a <strong className="font-bold">Calculated Focus Rating of {selectedAgent.calculatedFocus}%</strong>. Supervisors can override compliance alert flags to register proper credits.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2 pt-4 border-t border-border-soft bg-canvas-bg">
+              <button
+                type="button"
+                onClick={() => clearAlert(selectedAgent.id)}
+                className="w-full h-10 bg-accent-blue hover:opacity-90 active:scale-[0.98] text-canvas-bg text-[12.5px] font-bold rounded-[3px] flex items-center justify-center gap-2 cursor-pointer shadow-sm transition-all text-center select-none"
+              >
+                Clear Alert & Verify Activity
+              </button>
+              <button
+                type="button"
+                onClick={() => setSelectedAgent(null)}
+                className="w-full h-10 border border-border-soft hover:bg-sidebar-bg text-text-charcoal text-[12.5px] font-bold rounded-[3px] flex items-center justify-center cursor-pointer transition-all text-center select-none"
+              >
+                Close Drawer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

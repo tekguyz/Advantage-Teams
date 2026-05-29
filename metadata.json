@@ -1,6 +1,6 @@
 {
-  "name": "3CX Operations Telemetry SQL Toolkit",
-  "description": "An interactive database design playground, telemetry ingestion stream simulator, and high-performance Postgres SQL schema viewer with a deterministic AI-powered chronological timeline productivity correlator.",
+  "name": "Advantage Software",
+  "description": "The operational control center mapping hardware telephony logs to business contact records with integrated verification rules and carrier-grade anti-spam controllers.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

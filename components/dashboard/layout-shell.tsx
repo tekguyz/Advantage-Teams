@@ -1,5 +1,5 @@
 // components/dashboard/layout-shell.tsx
-// Frozen sidebar layout conforming to Jira Cloud workspace standard
+// Frozen sidebar layout conforming to Jira Cloud workspace standard with collapsible capabilities
 'use client';
 
 import React, { Suspense, useState, useEffect } from 'react';
@@ -16,7 +16,9 @@ import {
   Database, 
   ShieldCheck, 
   Cpu, 
-  FileText 
+  FileText,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 interface LayoutShellProps {
@@ -95,9 +97,11 @@ function ThemeToggle() {
 
 interface SidebarNavProps {
   onOpenHelp: () => void;
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
 }
 
-function SidebarNav({ onOpenHelp }: SidebarNavProps) {
+function SidebarNav({ onOpenHelp, isCollapsed, onToggleCollapse }: SidebarNavProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -117,23 +121,35 @@ function SidebarNav({ onOpenHelp }: SidebarNavProps) {
   return (
     <aside 
       id="workspace-sidebar"
-      className="h-screen w-[240px] flex-shrink-0 border-r border-border-soft bg-sidebar-bg flex flex-col justify-between select-none transition-colors duration-150"
+      className={`h-screen flex-shrink-0 border-r border-border-soft bg-sidebar-bg flex flex-col justify-between select-none transition-all duration-300 ease-in-out ${
+        isCollapsed ? 'w-[68px]' : 'w-[240px]'
+      }`}
     >
-      <div className="flex flex-col animate-fadeIn">
+      <div className="flex flex-col">
         {/* Brand Header block */}
-        <div id="sidebar-header" className="h-[54px] px-4 flex items-center gap-3 border-b border-border-soft bg-canvas-bg">
-          <BrandDiamondLogo />
-          <div className="flex flex-col min-w-0">
-            <span className="font-bold text-text-charcoal text-[13.5px] tracking-tight leading-tight truncate">Advantage Teams</span>
-            <span className="text-[9.5px] text-text-muted leading-none font-bold tracking-wider uppercase">Made by TEKGUYZ</span>
+        <div id="sidebar-header" className={`h-[54px] px-4 flex items-center border-b border-border-soft bg-canvas-bg overflow-hidden ${
+          isCollapsed ? 'justify-center' : 'justify-start'
+        }`}>
+          <div className="flex items-center gap-3 shrink-0">
+            <BrandDiamondLogo className="w-5 h-5 shrink-0" />
+            {!isCollapsed && (
+              <div className="flex flex-col min-w-0 animate-fadeIn text-left">
+                <span className="font-bold text-text-charcoal text-[13.5px] tracking-tight leading-tight truncate">Advantage Software</span>
+                <span className="text-[9.5px] text-text-muted leading-none font-bold tracking-wider uppercase">Staff Portal</span>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Navigation block */}
         <div className="flex flex-col gap-1.5 py-4">
-          <span className="px-4 text-[10px] font-bold text-text-muted tracking-wider uppercase opacity-80">
-            Workspace Views
-          </span>
+          {!isCollapsed ? (
+            <span className="px-4 text-[10px] font-bold text-text-muted tracking-wider uppercase opacity-80 block animate-fadeIn">
+              Workspace Views
+            </span>
+          ) : (
+            <div className="h-[1px] bg-border-soft mx-3 my-1" />
+          )}
           <nav className="flex flex-col">
             {navItems.map((item) => {
               const isActive = activeView === item.value;
@@ -142,45 +158,91 @@ function SidebarNav({ onOpenHelp }: SidebarNavProps) {
                 <button
                   key={item.value}
                   onClick={() => handleNavigate(item.value)}
-                  className={`flex items-center gap-3 h-[36px] px-4 text-[12.5px] transition-all border-l-[3px] text-left cursor-pointer ${
+                  className={`flex items-center transition-all border-l-[3px] text-left cursor-pointer h-[38px] ${
+                    isCollapsed ? 'justify-center px-0' : 'gap-3 px-4'
+                  } ${
                     isActive
                       ? 'bg-border-soft/60 text-accent-blue border-accent-blue font-bold'
                       : 'text-text-charcoal hover:bg-border-soft/30 border-transparent hover:text-accent-blue'
                   }`}
+                  title={isCollapsed ? item.label : undefined}
                 >
                   <IconComponent className={`w-4 h-4 shrink-0 ${isActive ? 'text-accent-blue' : 'text-text-muted'}`} />
-                  <span className="truncate font-medium">{item.label}</span>
+                  {!isCollapsed && <span className="truncate font-medium text-[12.5px] animate-fadeIn">{item.label}</span>}
                 </button>
               );
             })}
           </nav>
+
+          {/* Interactive Collapse Selector Row */}
+          <div className="h-[1px] bg-border-soft/60 mx-3 my-1.5" />
+          <button
+            onClick={onToggleCollapse}
+            type="button"
+            className={`flex items-center text-left transition-all border-l-[3px] border-transparent text-text-muted hover:text-accent-blue hover:bg-border-soft/30 h-[38px] cursor-pointer ${
+              isCollapsed ? 'justify-center px-0' : 'gap-3 px-4'
+            }`}
+            title={isCollapsed ? "Expand Sidebar Menu" : "Collapse Sidebar Menu"}
+            aria-label="Toggle Sidebar Menu"
+          >
+            {isCollapsed ? (
+              <ChevronRight className="w-4 h-4 shrink-0" />
+            ) : (
+              <>
+                <ChevronLeft className="w-4 h-4 shrink-0" />
+                <span className="truncate font-normal text-[11.5px] animate-fadeIn">Collapse Menu</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Corporate profile footer badge (Fully stationary with ThemeToggle and Help) */}
-      <div id="sidebar-footer-profile" className="p-3 bg-canvas-bg border-t border-border-soft flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 min-w-0 max-w-[125px]">
-          <div className="w-[30px] h-[30px] rounded-full bg-accent-blue text-canvas-bg flex items-center justify-center font-bold text-[11px] shrink-0 border border-border-soft/30">
+      {/* Corporate profile footer badge */}
+      {isCollapsed ? (
+        <div className="p-3 bg-canvas-bg border-t border-border-soft flex flex-col items-center gap-3 select-none">
+          <div 
+            className="w-[30px] h-[30px] rounded-full bg-accent-blue text-canvas-bg flex items-center justify-center font-bold text-[11px] shrink-0 border border-border-soft/30 cursor-pointer"
+            title="Ops Manager (ID: ADV-3CX0)"
+          >
             OP
           </div>
-          <div className="flex flex-col min-w-0 font-sans">
-            <span className="text-[11.5px] font-bold text-text-charcoal truncate leading-none mb-0.5">Ops Manager</span>
-            <span className="text-[9.5px] text-text-muted truncate">ID: ADV-3CX0</span>
+          <div className="flex flex-col gap-2.5 items-center">
+            <button
+              onClick={onOpenHelp}
+              type="button"
+              className="p-1.5 rounded-[3px] border border-border-soft hover:bg-border-soft/40 text-text-muted hover:text-text-charcoal transition-all cursor-pointer"
+              title="Open Workspace Help & Docs"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
+            <ThemeToggle />
           </div>
         </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          <button
-            onClick={onOpenHelp}
-            type="button"
-            className="p-1.5 rounded-[3px] border border-border-soft hover:bg-border-soft/40 text-text-muted hover:text-text-charcoal transition-all cursor-pointer select-none shrink-0"
-            aria-label="Open Workspace Help"
-            title="Open Workspace Help & Docs"
-          >
-            <HelpCircle className="w-4 h-4" />
-          </button>
-          <ThemeToggle />
+      ) : (
+        <div id="sidebar-footer-profile" className="p-3 bg-canvas-bg border-t border-border-soft flex items-center justify-between gap-2 transition-all">
+          <div className="flex items-center gap-2 min-w-0 max-w-[125px]">
+            <div className="w-[30px] h-[30px] rounded-full bg-accent-blue text-canvas-bg flex items-center justify-center font-bold text-[11px] shrink-0 border border-border-soft/30">
+              OP
+            </div>
+            <div className="flex flex-col min-w-0 font-sans">
+              <span className="text-[11.5px] font-bold text-text-charcoal truncate leading-none mb-0.5">Ops Manager</span>
+              <span className="text-[9.5px] text-text-muted truncate">ID: ADV-3CX0</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5 shrink-0">
+            <button
+              onClick={onOpenHelp}
+              type="button"
+              className="p-1.5 rounded-[3px] border border-border-soft hover:bg-border-soft/40 text-text-muted hover:text-text-charcoal transition-all cursor-pointer select-none shrink-0"
+              aria-label="Open Workspace Help"
+              title="Open Workspace Help & Docs"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </button>
+            <ThemeToggle />
+          </div>
         </div>
-      </div>
+      )}
     </aside>
   );
 }
@@ -199,20 +261,20 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
 
   const faqs = [
     {
-      q: "Where do call registers originate from?",
-      a: "They flow in from our linked physical 3CX IP-PBX via server-to-server call journaling APIs. When an agent hangs up, a call event is instantly dispatched to this workspace's ingestion endpoint."
+      q: "How does this system help office representatives receive proper credit?",
+      a: "By linking physical hardware handset extensions directly to active Zoho member profiles, any external client interaction is auto-routed to the correct representative. Shift leads and HR get dynamic live charts proving authentic project engagement hours, giving staff undeniable proof and credit for their external work actions."
     },
     {
-      q: "Why are some surveys skipped/suppressed?",
-      a: "Our compliance policy blocks surveys for calls under 120 seconds (under 2 minutes) to filter out automated IVRs/silent lines, and limits outbound texts to 1 dispatch per customer telephone number per 24 hours to prevent spam."
+      q: "Why are some customer satisfaction surveys skipped/suppressed?",
+      a: "Our quality assurance limits survey dispatches to meaningful call interactions. Calls under 120 seconds (under 2 minutes) are skipped to filter out answering machines, quick drops, or misdials, and client handsets are capped at 1 survey per 24 hours to block spam."
     },
     {
-      q: "How does the Zoho synchronization work?",
-      a: "Once a survey is successfully verified, the user's extension mapping matches the Zoho Profile ID. The system triggers an API sync to Zoho Desk to append the call timeline telemetry directly onto the stakeholder's master client case profile."
+      q: "What is the Focus Level metric and how is it used?",
+      a: "Focus level analyzes representative activity. It is calculated by dividing logged system updates by duration. If updates per hour are lower than 40%, the system flags a 'Review' tag to indicate that active workspace feedback might be required, which supervisors can easily clear manually."
     },
     {
-      q: "What is calculated 'Focus rating'?",
-      a: "Focus level analyzes representative activity. It is calculated by dividing total system operations (updates) by duration. If updates per hour are unusually low, the system throws a 'Review Required' compliance status."
+      q: "How does the Zoho database mapping synchronizer run?",
+      a: "Once a call meets compliance requirements, our SMS gateway dispatches the satisfaction feedback loop via Twilio. When the client responds, results map directly back to their Zoho Desk CRM timeline profile so no documentation is lost."
     }
   ];
 
@@ -225,7 +287,7 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
       />
 
       {/* Drawer */}
-      <div className="relative w-full max-w-[500px] h-full bg-canvas-bg shadow-2xl flex flex-col justify-between border-l border-border-soft z-50 p-6 animate-slideIn text-left transition-colors duration-150">
+      <div className="relative w-full max-w-[560px] h-full bg-canvas-bg shadow-2xl flex flex-col justify-between border-l border-border-soft z-50 p-6 animate-slideIn text-left transition-colors duration-150">
         <div className="flex-1 overflow-y-auto pr-1 text-[12.5px] text-text-charcoal flex flex-col">
           
           {/* Header */}
@@ -235,8 +297,8 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
                 <HelpCircle className="w-5 h-5 text-accent-blue" />
               </div>
               <div>
-                <h3 className="font-bold text-[14.5px] text-text-charcoal tracking-tight">Advantage Teams Support Center</h3>
-                <p className="text-[10px] text-text-muted font-mono font-semibold uppercase mt-0.5">Stakeholder Manual & Verification Blueprint</p>
+                <h3 className="font-bold text-[14.5px] text-text-charcoal tracking-tight">Support & Knowledge Base</h3>
+                <p className="text-[10px] text-text-muted font-semibold uppercase mt-0.5">Console Manual & Verification Guide</p>
               </div>
             </div>
             <button 
@@ -246,21 +308,22 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
               <X className="w-4 h-4" />
             </button>
           </div>
-
-          {/* Quick Stats Banner */}
-          <div className="bg-accent-blue/5 border border-accent-blue/20 rounded-[3px] p-3.5 mb-4 flex items-center gap-3">
-            <BrandDiamondLogo className="w-7 h-7" />
-            <div>
-              <span className="font-bold text-[12px] block text-text-charcoal">System Version v3.1.0 (LTS)</span>
-              <span className="text-[10.5px] text-text-muted">High-density 3CX-to-Zoho data synchronization and carrier gateway pipeline and compliance controller.</span>
-            </div>
+ 
+          {/* Welcome Guidance Card */}
+          <div className="bg-accent-blue/5 border border-accent-blue/15 rounded-[3px] p-4 mb-4">
+            <h4 className="font-bold text-[13px] text-text-charcoal mb-1 flex items-center gap-1.5">
+              💡 Welcome to your Operations Workspace
+            </h4>
+            <p className="text-[12px] text-text-muted leading-relaxed">
+              Advantage Software bridges physical phone connections (via 3CX WebHooks) with Zoho CRM contact files, automating satisfaction surveys over Twilio SMS. Use this reference area to learn about employee verification, compliance guardrails, and representative mappings.
+            </p>
           </div>
 
           {/* Dialog Tabs Navigation */}
           <div className="flex border-b border-border-soft mb-4 select-none">
             {[
-              { id: 'architecture', label: 'Architecture', icon: Database },
-              { id: 'policies', label: 'Guardrails', icon: ShieldCheck },
+              { id: 'architecture', label: 'Workflows', icon: Database },
+              { id: 'policies', label: 'Quality Filters', icon: ShieldCheck },
               { id: 'faq', label: 'Operations FAQ', icon: FileText }
             ].map((tab) => {
               const TabIcon = tab.icon;
@@ -288,10 +351,10 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
                 <div>
                   <h4 className="font-bold text-[12.5px] text-text-charcoal mb-1.5 flex items-center gap-1.5 uppercase tracking-wide">
                     <Database className="w-4 h-4 text-accent-blue" />
-                    Data Integration Pipeline Topology
+                    Office-to-Project Team Synergy
                   </h4>
                   <p className="text-[12px] leading-relaxed text-text-muted text-justify">
-                    Advantage Teams sits persistently at the center of the telecommunication stack. It bridges hardware device extensions to CRM case profiles through a three-stage relational verification tree:
+                    This workspace is built specifically to support office staff working on external client projects. By mapping physical handset extensions directly to active Zoho member profiles, we verify client-focused actions so team members automatically receive proper engagement credit and recognition:
                   </p>
                 </div>
 
@@ -300,30 +363,30 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
                     <span className="bg-accent-blue/15 text-accent-blue font-extrabold px-1.5 py-0.5 rounded leading-none">1</span>
                     <div>
                       <strong className="text-text-charcoal">3CX WebHook Event Ingestion</strong>
-                      <p className="text-[10px] text-text-muted mt-0.5">Captures raw JSON call logging payloads from PBX with representative Extension metrics.</p>
+                      <p className="text-[10px] text-text-muted mt-0.5">Captures communication activity events from hardware devices as soon as representative hang-ups hit the server.</p>
                     </div>
                   </div>
                   <div className="h-4 border-l border-dashed border-border-soft/80 ml-3" />
                   <div className="flex items-start gap-2">
                     <span className="bg-amber-500/15 text-amber-600 font-extrabold px-1.5 py-0.5 rounded leading-none">2</span>
                     <div>
-                      <strong className="text-text-charcoal">Relational Validation Engine</strong>
-                      <p className="text-[10px] text-text-muted mt-0.5">Cross-checks database mapping configuration registers, resolving Hardware Extension to Zoho CRM ID.</p>
+                      <strong className="text-text-charcoal">Representative Verification Matrix</strong>
+                      <p className="text-[10px] text-text-muted mt-0.5">Matches physical extensions to corresponding Zoho Desk profiles so employee records get verified automatically.</p>
                     </div>
                   </div>
                   <div className="h-4 border-l border-dashed border-border-soft/80 ml-3" />
                   <div className="flex items-start gap-2">
                     <span className="bg-status-verified-bg text-status-verified-text font-extrabold px-1.5 py-0.5 rounded leading-none">3</span>
                     <div>
-                      <strong className="text-text-charcoal">Twilio Outbound SMS Gateway</strong>
-                      <p className="text-[10px] text-text-muted mt-0.5">Launches the dynamic callback surveys and registers timeline telemetry logs to user accounts.</p>
+                      <strong className="text-text-charcoal">Delivery of Satisfaction Feedback</strong>
+                      <p className="text-[10px] text-text-muted mt-0.5">SMS satisfaction questions automatically dispatch to customer numbers, preserving feedback on CRM records.</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="border border-border-soft p-3.5 rounded-[3px] bg-canvas-bg leading-relaxed text-text-muted">
-                  <strong className="font-bold text-text-charcoal block mb-1">State Consistency</strong>
-                  The system relies on local session caches mapping back gracefully to a robust Vercel serverless layer. When standard databases are configured, the API endpoints route securely to write records without mock telemetry variables.
+                <div className="border border-border-soft p-3.5 rounded-[4px] bg-sidebar-bg/25 leading-relaxed text-text-muted">
+                  <strong className="font-bold text-text-charcoal block mb-1">Ensuring Proper Evaluation Credit</strong>
+                  By automating this activity verification channel, supervisors can track actual performance metrics across remote project assignments dynamically, without forcing representatives to manually compose daily progress reports.
                 </div>
               </div>
             )}
@@ -332,11 +395,11 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
               <div className="flex flex-col gap-4 animate-fadeIn">
                 <div>
                   <h4 className="font-bold text-[12.5px] text-text-charcoal mb-1.5 flex items-center gap-1.5 uppercase tracking-wide">
-                    <Cpu className="w-4 h-4 text-accent-blue" />
-                    Compliance & Relational Guardrails
+                    <ShieldCheck className="w-4 h-4 text-accent-blue" />
+                    Quality Assurance & Client Compliance
                   </h4>
                   <p className="text-[12px] leading-relaxed text-text-muted text-justify">
-                    Unfiltered telecom pipelines result in carrier spam flags and data collisions. The platform automatically enforces two critical pipeline throttles:
+                    To maintain professional outreach, avoid system collisions, and secure a spectacular customer experience, the workspace applies automated verification filters on all outgoing survey queues:
                   </p>
                 </div>
 
@@ -344,27 +407,27 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
                   <div className="border border-border-soft p-3 rounded-[3px] bg-sidebar-bg/40">
                     <span className="font-bold text-[12px] text-text-charcoal flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 bg-accent-blue rounded-full" />
-                      120-Second Active Hang-Up Rule
+                      120-Second Active Quality Filter
                     </span>
                     <p className="text-[11.5px] text-text-muted mt-1 leading-relaxed">
-                      Calls hanging up prior to reaching 2 minutes total duration are labeled <span className="font-mono text-[10.5px] bg-border-soft text-text-charcoal px-1 py-0.5 rounded font-semibold">Skipped: Under 2 Minutes</span>. This guarantees that calls that fail to establish a direct dialogue with support agents (such as answering machines, quick drops, or misdials) never trigger an outbound satisfaction message feedback request.
+                      Calls with active client conversations under 2 minutes are listed as <span className="font-mono text-[10.5px] bg-border-soft text-text-charcoal px-1 py-0.5 rounded font-semibold">Skipped: Under 2 Minutes</span>. This filters out automated IVR drops, voicemails, or wrong numbers, guaranteeing only meaningful client-facing actions trigger dynamic feedback dispatches.
                     </p>
                   </div>
 
                   <div className="border border-border-soft p-3 rounded-[3px] bg-sidebar-bg/40">
                     <span className="font-bold text-[12px] text-text-charcoal flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
-                      Anti-Spam Daily Frequency Ceiling
+                      Client Daily Anti-Spam Ceiling
                     </span>
                     <p className="text-[11.5px] text-text-muted mt-1 leading-relaxed">
-                      A single customer telephone number is allowed a maximum of <span className="font-bold">1 text dispatch within a 24-hour cycle</span>. Duplicate inbound calls hitting identical numbers within the same working shift are auto-filtered to maintain exceptional regulatory telecom compliance.
+                      Each unique client telephone register is restricted to a maximum of <span className="font-bold">1 feedback survey per 24-hour cycle</span>. Duplicate handoffs inside the same workday are auto-filtered to prevent customer fatigue.
                     </p>
                   </div>
                 </div>
 
-                <div className="p-3 bg-semibold border border-status-attention-text/20 bg-status-attention-bg rounded-[3px] text-status-attention-text text-[11.5px] leading-relaxed">
+                <div className="p-3 border border-status-attention-text/20 bg-status-attention-bg rounded-[3px] text-status-attention-text text-[11.5px] leading-relaxed">
                   <strong className="font-bold block mb-1">Supervisor Override Action</strong>
-                  Supervisors can review pending logs under the <em className="font-semibold">Team Performance</em> or <em className="font-semibold">Survey Center</em> panels, easily inspecting timeline activity diagrams and dismissing compliance exceptions if a specific agent requires manual clearance.
+                  Supervisors can always review pending alerts under the <em className="font-semibold">Team Performance</em> tab, checking representational status displays and completing manual clearances if a specific team member is working on complex support tickets.
                 </div>
               </div>
             )}
@@ -421,24 +484,49 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
 
 export function LayoutShell({ children }: LayoutShellProps) {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
     <div 
-      id="advantage-teams-root" 
+      id="advantage-software-root" 
       className="h-screen w-screen overflow-hidden flex bg-canvas-bg text-text-charcoal font-sans selection:bg-accent-blue/10 transition-colors duration-150"
     >
       <Suspense fallback={<div className="h-screen w-[240px] flex-shrink-0 bg-sidebar-bg border-r border-border-soft" />}>
-        <SidebarNav onOpenHelp={() => setIsHelpOpen(true)} />
+        <SidebarNav 
+          onOpenHelp={() => setIsHelpOpen(true)} 
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        />
       </Suspense>
 
       {/* Main workspace scrolling viewport */}
       <main 
         id="view-scrollbox-viewport" 
-        className="flex-1 h-screen overflow-y-auto pb-12 bg-canvas-bg"
+        className="flex-1 h-screen overflow-y-auto bg-canvas-bg transition-all duration-300 flex flex-col justify-between"
       >
-        <div className="max-w-[1250px] mx-auto p-6 flex flex-col">
+        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 flex flex-col">
           {children}
         </div>
+
+        {/* Clean Corporate Footer featuring TEKGUYZ */}
+        <footer className="border-t border-border-soft/60 py-3.5 px-4 sm:px-6 lg:px-8 bg-sidebar-bg/15 text-text-muted text-[11px] flex flex-col sm:flex-row items-center justify-between gap-3 select-none shrink-0 text-left">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-text-charcoal text-left">Advantage Software</span>
+            <span>•</span>
+            <span className="text-left">Enterprise Telephony Sync System v1.4</span>
+          </div>
+          <div className="flex items-center gap-1.5 self-start sm:self-auto">
+            <span>Engineering by</span>
+            <a 
+              href="https://tekguyz.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="inline-flex items-center px-2 py-0.5 rounded-[3px] bg-accent-blue text-canvas-bg dark:text-text-charcoal font-bold tracking-tight text-[10px] hover:brightness-110 active:scale-95 transition-all outline-none"
+            >
+              TEKGUYZ
+            </a>
+          </div>
+        </footer>
       </main>
 
       {/* Corporate Help Center Panel Slideout */}
@@ -446,3 +534,4 @@ export function LayoutShell({ children }: LayoutShellProps) {
     </div>
   );
 }
+
