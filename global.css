@@ -71,13 +71,27 @@ html.dark {
   --color-status-attention-text: var(--status-attention-text);
 }
 
-body {
+html, body {
   background-color: var(--canvas-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
   color: var(--text-charcoal);
   font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
   font-size: 13px;
   line-height: 1.4;
-  -webkit-font-smoothing: antialiased;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Custom utility fallback definitions for safe-areas */
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 /* Jira Cloud Clean Micro Inputs */

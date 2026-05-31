@@ -35,16 +35,16 @@ export function SupportDrawer({ isOpen, onClose }: SupportDrawerProps) {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end font-sans">
+    <div className="fixed inset-0 z-50 font-sans">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-black/45 backdrop-blur-xs transition-opacity" 
+        className="absolute inset-0 bg-black/45 backdrop-blur-xs transition-opacity cursor-pointer" 
         onClick={onClose} 
       />
 
       {/* Drawer */}
-      <div className="relative w-full max-w-[560px] h-full bg-canvas-bg shadow-2xl flex flex-col justify-between border-l border-border-soft z-50 p-6 animate-slideIn text-left transition-colors duration-150">
-        <div className="flex-1 overflow-y-auto pr-1 text-[11.5px] text-text-charcoal flex flex-col">
+      <div className="fixed top-0 bottom-0 right-0 w-full md:w-[400px] h-screen bg-canvas-bg border-l border-border-soft z-50 shadow-xl flex flex-col justify-between animate-slideIn text-left transition-colors duration-150 pb-safe">
+        <div className="flex-1 overflow-y-auto pr-1 text-[11.5px] text-text-charcoal flex flex-col px-4 py-5 md:px-6">
           
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border-soft pb-4 mb-4">
@@ -222,7 +222,7 @@ export function SupportDrawer({ isOpen, onClose }: SupportDrawerProps) {
         </div>
 
         {/* Footer actions inside the drawer */}
-        <div className="border-t border-border-soft pt-4 bg-canvas-bg flex flex-col gap-2">
+        <div className="border-t border-border-soft bg-canvas-bg flex flex-col gap-2 px-4 py-5 md:px-6">
           <button
             type="button"
             onClick={onClose}
