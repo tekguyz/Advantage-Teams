@@ -155,7 +155,7 @@ export function AllRowsCounter({ count, active, onClick }: CounterProps) {
     <button
       onClick={onClick}
       type="button"
-      className={`p-3 bg-canvas-bg border rounded-[3px] flex flex-col items-start transition-all cursor-pointer text-left w-full ${
+      className={`p-3 bg-canvas-bg border rounded-[3px] flex flex-col items-start transition-all cursor-pointer text-left shrink-0 w-[150px] snap-center md:w-full md:shrink-1 ${
         active 
           ? 'border-accent-blue bg-border-soft/30 font-bold' 
           : 'border-border-soft hover:bg-sidebar-bg/30'
@@ -175,7 +175,7 @@ export function SentCounter({ count, active, onClick }: CounterProps) {
     <button
       onClick={onClick}
       type="button"
-      className={`p-3 bg-canvas-bg border rounded-[3px] flex flex-col items-start transition-all cursor-pointer text-left w-full ${
+      className={`p-3 bg-canvas-bg border rounded-[3px] flex flex-col items-start transition-all cursor-pointer text-left shrink-0 w-[150px] snap-center md:w-full md:shrink-1 ${
         active 
           ? 'border-accent-blue bg-border-soft/30 font-bold' 
           : 'border-border-soft hover:bg-sidebar-bg/30'
@@ -195,7 +195,7 @@ export function SkippedCounter({ count, active, onClick }: CounterProps) {
     <button
       onClick={onClick}
       type="button"
-      className={`p-3 bg-canvas-bg border rounded-[3px] flex flex-col items-start transition-all cursor-pointer text-left w-full ${
+      className={`p-3 bg-canvas-bg border rounded-[3px] flex flex-col items-start transition-all cursor-pointer text-left shrink-0 w-[150px] snap-center md:w-full md:shrink-1 ${
         active 
           ? 'border-accent-blue bg-border-soft/30 font-bold' 
           : 'border-border-soft hover:bg-sidebar-bg/30'
@@ -215,7 +215,7 @@ export function DuplicateCounter({ count, active, onClick }: CounterProps) {
     <button
       onClick={onClick}
       type="button"
-      className={`p-3 bg-canvas-bg border rounded-[3px] flex flex-col items-start transition-all cursor-pointer text-left w-full ${
+      className={`p-3 bg-canvas-bg border rounded-[3px] flex flex-col items-start transition-all cursor-pointer text-left shrink-0 w-[150px] snap-center md:w-full md:shrink-1 ${
         active 
           ? 'border-accent-blue bg-border-soft/30 font-bold' 
           : 'border-border-soft hover:bg-sidebar-bg/30'

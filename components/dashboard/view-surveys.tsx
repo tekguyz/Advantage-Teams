@@ -2,7 +2,7 @@
 // High-density outbound survey and automated carrier logs workspace
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { Play, Download, RefreshCw } from 'lucide-react';
 import { 
   AllRowsCounter, 
@@ -14,7 +14,8 @@ import {
   Toast,
   SortArrow 
 } from '@/components/ui/component-feedback';
-import { ExtensionMapping, generateSimulationRecords, CallEvent } from '@/types/data-matrix';
+import { ExtensionMapping } from '@/types/data-matrix';
+import { useSurveySimulation } from '@/hooks/use-survey-simulation';
 
 interface ViewSurveysProps {
   mappings: ExtensionMapping[];
@@ -29,65 +30,21 @@ export default function ViewSurveys({
   order,
   onSort,
 }: ViewSurveysProps) {
-  const [calls, setCalls] = useState<CallEvent[]>(() => generateSimulationRecords());
-  const [isSimulating, setIsSimulating] = useState(false);
-  const [toastMsg, setToastMsg] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState<'all' | 'sent' | 'skipped' | 'duplicate'>('all');
-
-  const handleSimulation = async () => {
-    setIsSimulating(true);
-    setCalls([]); 
-    await new Promise(r => setTimeout(r, 400));
-    setCalls(generateSimulationRecords());
-    setToastMsg("Simulation Complete: 300 Events Analyzed.");
-    setIsSimulating(false);
-  };
-
-  const handleCSVExport = () => {
-    if (typeof window !== 'undefined') {
-      const header = "Timestamp,Extension,Representative Name,Customer Number,Duration,Status\n";
-      const rows = calls.map(c => {
-        const rep = mappings.find(m => m.extension === c.agent_extension)?.mappedName || `Ext ${c.agent_extension}`;
-        const s = c.delivery_status === 'Sent' ? 'Sent' : (c.delivery_status === 'Skipped: Under 2 Minutes' ? 'Skipped' : 'Duplicate');
-        return `"${c.processed_at}","Ext ${c.agent_extension}","${rep}","${c.customer_phone}",${c.call_duration_seconds},"${s}"`;
-      }).join("\n");
-
-      const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "twilio_outbound_delivery_log.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      setToastMsg("Export Complete: Download file initiated successfully.");
-    }
-  };
-
-  const sortedCalls = useMemo(() => {
-    if (!sortBy) return calls;
-    const f = sortBy === 'customer_phone' ? 'customer_phone' : (sortBy === 'agent_extension' ? 'agent_extension' : 'processed_at');
-    return [...calls].sort((a, b) => {
-      const valA = a[f] || '';
-      const valB = b[f] || '';
-      const comp = String(valA).localeCompare(String(valB), undefined, { numeric: true });
-      return order === 'asc' ? comp : -comp;
-    });
-  }, [calls, sortBy, order]);
-
-  const filteredCalls = useMemo(() => {
-    return sortedCalls.filter(c => {
-      if (activeFilter === 'sent') return c.delivery_status === 'Sent';
-      if (activeFilter === 'skipped') return c.delivery_status === 'Skipped: Under 2 Minutes';
-      if (activeFilter === 'duplicate') return c.delivery_status === 'Skipped: Daily Cap Hit';
-      return true;
-    });
-  }, [sortedCalls, activeFilter]);
-
-  const countAll = calls.length;
-  const countSent = calls.filter(c => c.delivery_status === 'Sent').length;
-  const countSkipped = calls.filter(c => c.delivery_status === 'Skipped: Under 2 Minutes').length;
-  const countDuplicate = calls.filter(c => c.delivery_status === 'Skipped: Daily Cap Hit').length;
+  const {
+    calls,
+    isSimulating,
+    toastMsg,
+    setToastMsg,
+    activeFilter,
+    setActiveFilter,
+    handleSimulation,
+    handleCSVExport,
+    filteredCalls,
+    countAll,
+    countSent,
+    countSkipped,
+    countDuplicate,
+  } = useSurveySimulation({ mappings, sortBy, order });
 
   return (
     <div className="flex flex-col gap-5 animate-fadeIn text-left">
@@ -116,7 +73,7 @@ export default function ViewSurveys({
         </button>
       </div>
 
-      <div className="badge-container-grid select-none grid grid-cols-2 lg:grid-cols-4 w-full gap-3">
+      <div className="badge-container-grid select-none flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-3 pb-2 w-full md:grid md:grid-cols-4">
         <AllRowsCounter count={countAll} active={activeFilter === 'all'} onClick={() => setActiveFilter('all')} />
         <SentCounter count={countSent} active={activeFilter === 'sent'} onClick={() => setActiveFilter('sent')} />
         <SkippedCounter count={countSkipped} active={activeFilter === 'skipped'} onClick={() => setActiveFilter('skipped')} />

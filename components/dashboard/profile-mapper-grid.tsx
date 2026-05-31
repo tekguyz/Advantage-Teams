@@ -1,16 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { AgentProfile } from '@/types/types-ingestion';
-import { 
-  Save, 
-  HelpCircle, 
-  RefreshCw, 
-  Check, 
-  X, 
-  UserPlus, 
-  AlertCircle 
-} from 'lucide-react';
+import { Save, Check, X, AlertCircle } from 'lucide-react';
+import { useProfileMapper } from '@/hooks/use-profile-mapper';
 
 export interface ProfileMapperGridProps {
   agents: AgentProfile[];
@@ -19,99 +12,16 @@ export interface ProfileMapperGridProps {
 }
 
 export function ProfileMapperGrid({ agents, onLogMessage, onRefresh }: ProfileMapperGridProps) {
-  // Store editing states per agent ID
-  const [drafts, setDrafts] = useState<Record<string, { extension: string; zoho_user_id: string }>>(() => {
-    const initialDrafts: Record<string, { extension: string; zoho_user_id: string }> = {};
-    agents.forEach(agent => {
-      initialDrafts[agent.id] = {
-        extension: agent.extension,
-        zoho_user_id: agent.zoho_user_id
-      };
-    });
-    return initialDrafts;
-  });
-  const [savingId, setSavingId] = useState<string | null>(null);
-  const [feedbackId, setFeedbackId] = useState<string | null>(null);
-  const [feedbackStatus, setFeedbackStatus] = useState<'success' | 'error' | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const handleInputChange = (agentId: string, field: 'extension' | 'zoho_user_id', value: string) => {
-    setDrafts(prev => ({
-      ...prev,
-      [agentId]: {
-        ...prev[agentId],
-        [field]: value
-      }
-    }));
-  };
-
-  const handleSaveProfile = async (agentId: string, agentName: string) => {
-    const draft = drafts[agentId];
-    if (!draft) return;
-
-    if (!draft.extension.trim()) {
-      setErrorMessage("Extension cannot be empty.");
-      onLogMessage(`[MAPPING FAILURE] Attempted to save empty extension for ${agentName}`);
-      return;
-    }
-    if (!draft.zoho_user_id.trim()) {
-      setErrorMessage("Zoho User Reference cannot be empty.");
-      onLogMessage(`[MAPPING FAILURE] Attempted to save empty Zoho ID for ${agentName}`);
-      return;
-    }
-
-    setSavingId(agentId);
-    setErrorMessage(null);
-    onLogMessage(`Persisting profile binding for ${agentName} (Ext: ${draft.extension} => Zoho: ${draft.zoho_user_id})...`);
-
-    try {
-      const res = await fetch('/api/surveys', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'updateProfile',
-          id: agentId,
-          extension: draft.extension.trim(),
-          zoho_user_id: draft.zoho_user_id.trim()
-        })
-      });
-
-      const data = await res.json();
-      if (res.ok && data.status === 'success') {
-        onLogMessage(`[MAPPING Persisted] ${data.message}`);
-        
-        // Success animation loop
-        setFeedbackId(agentId);
-        setFeedbackStatus('success');
-        setTimeout(() => {
-          setFeedbackId(null);
-          setFeedbackStatus(null);
-        }, 2000);
-
-        await onRefresh();
-      } else {
-        const errorMsg = data.message || "Failed to commit configuration to datastore.";
-        setErrorMessage(errorMsg);
-        onLogMessage(`[DB FAIL] Profile update refused: ${errorMsg}`);
-        
-        setFeedbackId(agentId);
-        setFeedbackStatus('error');
-        setTimeout(() => {
-          setFeedbackId(null);
-          setFeedbackStatus(null);
-        }, 3000);
-      }
-    } catch (err: any) {
-      const errorMsg = err.message || "Network request failed.";
-      setErrorMessage(errorMsg);
-      onLogMessage(`[MAPPING CONNECTION EXCEPTION] Fail: ${errorMsg}`);
-      
-      setFeedbackId(agentId);
-      setFeedbackStatus('error');
-    } finally {
-      setSavingId(null);
-    }
-  };
+  const {
+    drafts,
+    savingId,
+    feedbackId,
+    feedbackStatus,
+    errorMessage,
+    setErrorMessage,
+    handleInputChange,
+    handleSaveProfile
+  } = useProfileMapper({ agents, onLogMessage, onRefresh });
 
   return (
     <div 
@@ -229,7 +139,7 @@ export function ProfileMapperGrid({ agents, onLogMessage, onRefresh }: ProfileMa
                     }`}
                   >
                     {isSaving ? (
-                      <RefreshCw className="w-3 h-3 animate-spin" />
+                      <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     ) : (
                       <Save className="w-3 h-3" />
                     )}
