@@ -18,8 +18,10 @@ import {
   Cpu, 
   FileText,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Menu
 } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface LayoutShellProps {
   children: React.ReactNode;
@@ -99,16 +101,22 @@ interface SidebarNavProps {
   onOpenHelp: () => void;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
-function SidebarNav({ onOpenHelp, isCollapsed, onToggleCollapse }: SidebarNavProps) {
+function SidebarNav({ onOpenHelp, isCollapsed, onToggleCollapse, isMobileOpen, onMobileClose }: SidebarNavProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const activeView = searchParams.get('view') || 'overview';
+  const isMobile = useIsMobile();
 
   const handleNavigate = (view: string) => {
     router.push(`${pathname}?view=${view}`);
+    if (isMobile && onMobileClose) {
+      onMobileClose();
+    }
   };
 
   const navItems = [
@@ -118,33 +126,49 @@ function SidebarNav({ onOpenHelp, isCollapsed, onToggleCollapse }: SidebarNavPro
     { label: "Member Settings", value: "settings", icon: Settings },
   ];
 
+  const sidebarClasses = `${
+    isMobile 
+      ? `fixed top-0 bottom-0 left-0 z-50 h-screen w-[240px] ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}` 
+      : `relative h-screen flex-shrink-0 ${isCollapsed ? 'w-[68px]' : 'w-[240px]'}`
+  } border-r border-border-soft bg-sidebar-bg flex flex-col justify-between select-none transition-all duration-300 ease-in-out`;
+
+  const showFullContext = !isCollapsed || isMobile;
+
   return (
     <aside 
       id="workspace-sidebar"
-      className={`h-screen flex-shrink-0 border-r border-border-soft bg-sidebar-bg flex flex-col justify-between select-none transition-all duration-300 ease-in-out ${
-        isCollapsed ? 'w-[68px]' : 'w-[240px]'
-      }`}
+      className={sidebarClasses}
     >
       <div className="flex flex-col flex-1 justify-between">
         <div className="flex flex-col">
           {/* Brand Header block */}
           <div id="sidebar-header" className={`h-[54px] px-4 flex items-center border-b border-border-soft bg-canvas-bg overflow-hidden ${
-            isCollapsed ? 'justify-center' : 'justify-start'
+            (isCollapsed && !isMobile) ? 'justify-center' : 'justify-between'
           }`}>
             <div className="flex items-center gap-3 shrink-0">
               <BrandDiamondLogo className="w-5 h-5 shrink-0" />
-              {!isCollapsed && (
+              {showFullContext && (
                 <div className="flex flex-col min-w-0 animate-fadeIn text-left">
                   <span className="font-bold text-text-charcoal text-[13.5px] tracking-tight leading-tight truncate">Advantage Software</span>
                   <span className="text-[9.5px] text-text-muted leading-none font-bold tracking-wider uppercase">Staff Portal</span>
                 </div>
               )}
             </div>
+            {isMobile && (
+              <button
+                type="button"
+                onClick={onMobileClose}
+                className="p-1 text-[#5e6c84] hover:text-[#172b4d] rounded-sm hover:bg-border-soft/40 transition-colors cursor-pointer"
+                aria-label="Close Navigation Menu"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
           {/* Navigation block */}
           <div className="flex flex-col gap-1.5 py-4">
-            {!isCollapsed ? (
+            {showFullContext ? (
               <span className="px-4 text-[10px] font-bold text-text-muted tracking-wider uppercase opacity-80 block animate-fadeIn">
                 Workspace Views
               </span>
@@ -155,21 +179,22 @@ function SidebarNav({ onOpenHelp, isCollapsed, onToggleCollapse }: SidebarNavPro
               {navItems.map((item) => {
                 const isActive = activeView === item.value;
                 const IconComponent = item.icon;
+                const showLabel = showFullContext;
                 return (
                   <button
                     key={item.value}
                     onClick={() => handleNavigate(item.value)}
                     className={`flex items-center transition-all border-l-[3px] text-left cursor-pointer h-[38px] ${
-                      isCollapsed ? 'justify-center px-0' : 'gap-3 px-4'
+                      !showLabel ? 'justify-center px-0' : 'gap-3 px-4'
                     } ${
                       isActive
                         ? 'bg-border-soft/60 text-accent-blue border-accent-blue font-bold'
                         : 'text-text-charcoal hover:bg-border-soft/30 border-transparent hover:text-accent-blue'
                     }`}
-                    title={isCollapsed ? item.label : undefined}
+                    title={!showLabel ? item.label : undefined}
                   >
                     <IconComponent className={`w-4 h-4 shrink-0 ${isActive ? 'text-accent-blue' : 'text-text-muted'}`} />
-                    {!isCollapsed && <span className="truncate font-medium text-[12.5px] animate-fadeIn">{item.label}</span>}
+                    {showLabel && <span className="truncate font-medium text-[12.5px] animate-fadeIn">{item.label}</span>}
                   </button>
                 );
               })}
@@ -178,31 +203,33 @@ function SidebarNav({ onOpenHelp, isCollapsed, onToggleCollapse }: SidebarNavPro
         </div>
 
         {/* Interactive Collapse Selector Row at Bottom of Upper Section */}
-        <div className="flex flex-col pb-2 shrink-0">
-          <div className="h-[1px] bg-border-soft/60 mx-3 my-1.5" />
-          <button
-            onClick={onToggleCollapse}
-            type="button"
-            className={`flex items-center text-left transition-all border-l-[3px] border-transparent text-text-muted hover:text-accent-blue hover:bg-border-soft/30 h-[38px] cursor-pointer ${
-              isCollapsed ? 'justify-center px-0' : 'gap-3 px-4'
-            }`}
-            title={isCollapsed ? "Expand Sidebar Menu" : "Collapse Sidebar Menu"}
-            aria-label="Toggle Sidebar Menu"
-          >
-            {isCollapsed ? (
-              <ChevronRight className="w-4 h-4 shrink-0" />
-            ) : (
-              <>
-                <ChevronLeft className="w-4 h-4 shrink-0" />
-                <span className="truncate font-normal text-[11.5px] animate-fadeIn">Collapse Menu</span>
-              </>
-            )}
-          </button>
-        </div>
+        {!isMobile && (
+          <div className="flex flex-col pb-2 shrink-0">
+            <div className="h-[1px] bg-border-soft/60 mx-3 my-1.5" />
+            <button
+              onClick={onToggleCollapse}
+              type="button"
+              className={`flex items-center text-left transition-all border-l-[3px] border-transparent text-text-muted hover:text-accent-blue hover:bg-border-soft/30 h-[38px] cursor-pointer ${
+                isCollapsed ? 'justify-center px-0' : 'gap-3 px-4'
+              }`}
+              title={isCollapsed ? "Expand Sidebar Menu" : "Collapse Sidebar Menu"}
+              aria-label="Toggle Sidebar Menu"
+            >
+              {isCollapsed ? (
+                <ChevronRight className="w-4 h-4 shrink-0" />
+              ) : (
+                <>
+                  <ChevronLeft className="w-4 h-4 shrink-0" />
+                  <span className="truncate font-normal text-[11.5px] animate-fadeIn">Collapse Menu</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Corporate profile footer badge */}
-      {isCollapsed ? (
+      {(isCollapsed && !isMobile) ? (
         <div className="p-3 bg-canvas-bg border-t border-border-soft flex flex-col items-center gap-3 select-none">
           <button
             onClick={onOpenHelp}
@@ -485,17 +512,29 @@ function HelpDrawer({ isOpen, onClose }: HelpDrawerProps) {
 export function LayoutShell({ children }: LayoutShellProps) {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   return (
     <div 
       id="advantage-software-root" 
-      className="h-screen w-screen overflow-hidden flex bg-canvas-bg text-text-charcoal font-sans selection:bg-accent-blue/10 transition-colors duration-150"
+      className="h-screen w-screen overflow-hidden flex bg-canvas-bg text-text-charcoal font-sans selection:bg-accent-blue/10 transition-colors duration-150 relative"
     >
+      {/* Backdrop for mobile */}
+      {isMobile && isMobileOpen && (
+        <div 
+          className="fixed inset-0 bg-black/40 z-40 transition-opacity md:hidden" 
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
+
       <Suspense fallback={<div className="h-screen w-[240px] flex-shrink-0 bg-sidebar-bg border-r border-border-soft" />}>
         <SidebarNav 
           onOpenHelp={() => setIsHelpOpen(true)} 
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          isMobileOpen={isMobileOpen}
+          onMobileClose={() => setIsMobileOpen(false)}
         />
       </Suspense>
 
@@ -504,7 +543,23 @@ export function LayoutShell({ children }: LayoutShellProps) {
         id="view-scrollbox-viewport" 
         className="flex-1 h-screen overflow-y-auto bg-canvas-bg transition-all duration-300 flex flex-col justify-between"
       >
-        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 flex flex-col">
+        {/* Mobile top bar header row */}
+        <div className="flex md:hidden h-[54px] w-full border-b border-border-soft items-center justify-between px-4 bg-canvas-bg shrink-0 sticky top-0 z-35">
+          <div className="flex items-center gap-2.5">
+            <BrandDiamondLogo className="w-5 h-5 shrink-0" />
+            <span className="font-bold text-text-charcoal text-[13.5px] tracking-tight truncate">Advantage Software</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsMobileOpen(true)}
+            className="p-1.5 rounded-[3px] border border-border-soft text-text-charcoal hover:bg-border-soft/30 transition-all cursor-pointer flex items-center justify-center shrink-0"
+            aria-label="Open Navigation Menu"
+          >
+            <Menu className="w-4 h-4 text-text-charcoal" />
+          </button>
+        </div>
+
+        <div className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 flex flex-col font-sans">
           {children}
         </div>
 
