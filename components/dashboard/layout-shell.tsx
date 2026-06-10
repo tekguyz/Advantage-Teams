@@ -51,7 +51,7 @@ export function LayoutShell({ children }: LayoutShellProps) {
       >
         {/* Mobile top bar header row */}
         <div className="flex md:hidden h-[54px] w-full border-b border-border-soft items-center justify-between px-4 bg-canvas-bg shrink-0 sticky top-0 z-35">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 min-w-0">
             <BrandDiamondLogo className="w-5 h-5 shrink-0" />
             <span className="font-bold text-text-charcoal text-[13.5px] tracking-tight truncate">Advantage Software — Teams</span>
           </div>
@@ -70,19 +70,17 @@ export function LayoutShell({ children }: LayoutShellProps) {
         </div>
 
         {/* Clean Corporate Footer featuring TEKGUYZ */}
-        <footer className="border-t border-border-soft/60 py-3.5 px-4 sm:px-6 lg:px-8 bg-sidebar-bg/15 text-text-muted text-[11px] flex flex-col sm:flex-row items-center justify-between gap-3 select-none shrink-0 text-left">
-          <div className="flex items-center gap-2">
-            <span className="font-semibold text-text-charcoal text-left">Advantage Software — Teams</span>
-            <span>•</span>
-            <span className="text-left">Performance Analytics & Telemetry Workspace v1.4</span>
+        <footer className="border-t border-border-soft/60 py-3.5 px-4 sm:px-6 lg:px-8 bg-sidebar-bg/15 text-text-muted text-[11px] flex flex-row items-center justify-between gap-4 select-none shrink-0 w-full overflow-hidden whitespace-nowrap">
+          <div className="flex items-center min-w-0">
+            <span className="font-semibold text-text-charcoal truncate">Advantage Teams</span>
           </div>
-          <div className="flex items-center gap-1.5 self-start sm:self-auto flex-row">
-            <span>Engineering by</span>
+          <div className="flex items-center gap-1.5 shrink-0 text-text-muted select-none">
+            <span className="text-[10.5px]">Engineered by</span>
             <a 
               href="https://tekguyz.com" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="inline-flex items-center px-2 py-0.5 rounded-[3px] bg-[#0052cc] dark:bg-[#1f6feb] text-white font-bold tracking-tight text-[10px] hover:brightness-110 active:scale-95 transition-all outline-none shadow-xs"
+              className="text-[#0052cc] dark:text-accent-blue font-sans font-black uppercase tracking-tight text-[11px] hover:underline"
             >
               TEKGUYZ
             </a>

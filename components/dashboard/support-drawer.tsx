@@ -204,7 +204,7 @@ export function SupportDrawer({ isOpen, onClose }: SupportDrawerProps) {
         </div>
 
         {/* Footer actions inside the drawer */}
-        <div className="border-t border-border-soft bg-canvas-bg flex flex-col gap-2 px-4 py-5 md:px-6">
+        <div className="border-t border-border-soft bg-canvas-bg flex flex-col gap-2 px-4 pt-5 pb-14 sm:pb-6 md:px-6">
           <button
             type="button"
             onClick={onClose}
