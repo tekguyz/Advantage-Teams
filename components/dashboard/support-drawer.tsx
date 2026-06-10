@@ -11,7 +11,7 @@ interface SupportDrawerProps {
 }
 
 export function SupportDrawer({ isOpen, onClose }: SupportDrawerProps) {
-  const [activeTab, setActiveTab] = useState<'architecture' | 'policies' | 'faq'>('architecture');
+  const [activeTab, setActiveTab] = useState<'credit' | 'surveys' | 'faq'>('credit');
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   if (!isOpen) return null;
@@ -51,9 +51,9 @@ export function SupportDrawer({ isOpen, onClose }: SupportDrawerProps) {
           {/* Dialog Tabs Navigation */}
           <div className="flex border-b border-border-soft mb-4 select-none shrink-0">
             {[
-              { id: 'architecture', label: 'Workflows', icon: Database },
-              { id: 'policies', label: 'Guidelines', icon: ShieldCheck },
-              { id: 'faq', label: 'FAQ', icon: FileText }
+              { id: 'credit', label: 'Rep Credit', icon: Database },
+              { id: 'surveys', label: 'SMS Surveys', icon: ShieldCheck },
+              { id: 'faq', label: 'Support FAQ', icon: FileText }
             ].map((tab) => {
               const TabIcon = tab.icon;
               return (
@@ -79,15 +79,15 @@ export function SupportDrawer({ isOpen, onClose }: SupportDrawerProps) {
 
           {/* Tab Content Panels */}
           <div className="flex-1">
-            {activeTab === 'architecture' && (
+            {activeTab === 'credit' && (
               <div className="flex flex-col gap-3.5 animate-fadeIn">
                 <div className="text-left">
                   <h4 className="font-bold text-[12px] text-text-charcoal mb-1 flex items-center gap-1.5 uppercase tracking-wide">
                     <Database className="w-3.5 h-3.5 text-accent-blue" />
-                    How It Works
+                    Representational Credit
                   </h4>
                   <p className="text-[11.5px] leading-relaxed text-text-muted text-left">
-                    Our platform automatically connects phone interactions from representatives with customer profiles. This ensures reps receive instant, accurate credit for helping customers, completely removing manual record keeping:
+                    How team members get credit for all their work—whether on physical phone lines or on offline focus tasks, project assignments, or timeout codes:
                   </p>
                 </div>
 
@@ -95,70 +95,80 @@ export function SupportDrawer({ isOpen, onClose }: SupportDrawerProps) {
                   <div className="flex items-start gap-2.5">
                     <span className="bg-[#0052cc] text-white font-extrabold w-4.5 h-4.5 text-[10px] rounded-full flex items-center justify-center shrink-0">1</span>
                     <div className="flex-1 min-w-0">
-                      <strong className="text-text-charcoal text-[11.5px] block font-bold leading-tight text-left">Logged Calls</strong>
-                      <p className="text-[11px] text-text-muted mt-0.5 leading-normal text-left">Calculates call lengths automatically and saves them as soon as discussions conclude.</p>
+                      <strong className="text-text-charcoal text-[11.5px] block font-bold leading-tight text-left">Invoices &amp; Calls</strong>
+                      <p className="text-[11px] text-text-muted mt-0.5 leading-normal text-left">We connect phone systems directly to customer files, so reps automatically get credited with call completions without writing manual shift logs.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2.5">
                     <span className="bg-[#b35b00] dark:bg-[#f1b44c] text-white dark:text-[#3a2e12] font-extrabold w-4.5 h-4.5 text-[10px] rounded-full flex items-center justify-center shrink-0">2</span>
                     <div className="flex-1 min-w-0">
-                      <strong className="text-text-charcoal text-[11.5px] block font-bold leading-tight text-left">Account Matching</strong>
-                      <p className="text-[11px] text-text-muted mt-0.5 leading-normal text-left">Pairs phone activity with the right client profile so you get complete, automated performance credit.</p>
+                      <strong className="text-text-charcoal text-[11.5px] block font-bold leading-tight text-left">Offline Projects</strong>
+                      <p className="text-[11px] text-text-muted mt-0.5 leading-normal text-left">When you switch to offline tasks (like paperwork, file cleanups, or case reviews), the platform verifies active assignments so this valuable focus time is tracked and credited.</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2.5">
                     <span className="bg-[#006644] dark:bg-[#57d9a3] text-white dark:text-[#1f3a2b] font-extrabold w-4.5 h-4.5 text-[10px] rounded-full flex items-center justify-center shrink-0">3</span>
                     <div className="flex-1 min-w-0">
-                      <strong className="text-text-charcoal text-[11.5px] block font-bold leading-tight text-left">Customer Feedback</strong>
-                      <p className="text-[11px] text-text-muted mt-0.5 leading-normal text-left">Triggers safe, automated surveys to gather positive customer insights directly inside their histories.</p>
+                      <strong className="text-text-charcoal text-[11.5px] block font-bold leading-tight text-left">Timeout Protections</strong>
+                      <p className="text-[11px] text-text-muted mt-0.5 leading-normal text-left">Breaks and timeout margins are protected under verified ranges so employees never lose progress or fall below benchmarks during scheduled pauses.</p>
                     </div>
                   </div>
                 </div>
 
                 <div className="border border-border-soft p-3 rounded-[3px] bg-sidebar-bg/20 text-[11px] leading-relaxed text-text-muted text-left">
-                  <strong className="font-bold text-text-charcoal block mb-0.5">Simple Performance Credit</strong>
-                  No manual logs or paperwork. Representatives can focus strictly on customer care while the dashboard validates efforts in the background.
+                  <strong className="font-bold text-text-charcoal block mb-0.5">Dual-Purpose Credit Assurance</strong>
+                  Whether on direct inbound streams or offline tasks, every minute of focus is safely verified and credited to reflect your dynamic contribution accurately.
                 </div>
               </div>
             )}
 
-            {activeTab === 'policies' && (
+            {activeTab === 'surveys' && (
               <div className="flex flex-col gap-3.5 animate-fadeIn">
                 <div className="text-left">
                   <h4 className="font-bold text-[12px] text-text-charcoal mb-1 flex items-center gap-1.5 uppercase tracking-wide">
                     <ShieldCheck className="w-3.5 h-3.5 text-accent-blue" />
-                    Customer Quality Rules
+                    Outbound SMS Surveys
                   </h4>
                   <p className="text-[11.5px] leading-relaxed text-text-muted text-left">
-                    We want feedback to be genuine and respectful of customer time. To ensure survey quality, we utilize smart customer guidelines automatically:
+                    Clear explanation of how customer feedback loops work, ensuring high-quality responses and zero communication fatigue:
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 gap-2.5">
                   <div className="border border-border-soft p-3 rounded-[3px] bg-sidebar-bg/30 text-left">
-                    <strong className="font-bold text-[11.5px] text-text-charcoal flex items-center gap-1.5">
+                    <strong className="font-bold text-[11.5px] text-text-charcoal flex items-center gap-1.5 font-sans animate-fade">
                       <span className="w-1.5 h-1.5 bg-accent-blue rounded-full" />
-                      Two-Minute Conversation Rule
+                      Automatic Surveys
                     </strong>
                     <p className="text-[11px] text-text-muted mt-0.5 leading-relaxed">
-                      Only calls lasting longer than two minutes trigger evaluation requests. This filters out quick busy signals, wrong numbers, or voice mailboxes automatically.
+                      When a helpful chat wraps up, the system automatically texts the customer a simple satisfaction question.
                     </p>
                   </div>
 
                   <div className="border border-border-soft p-3 rounded-[3px] bg-sidebar-bg/30 text-left">
-                    <strong className="font-bold text-[11.5px] text-text-charcoal flex items-center gap-1.5">
+                    <strong className="font-bold text-[11.5px] text-text-charcoal flex items-center gap-1.5 font-sans animate-fade">
                       <span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
-                      One Survey per Day Cap
+                      The 2-Minute Buffer
                     </strong>
                     <p className="text-[11px] text-text-muted mt-0.5 leading-relaxed">
-                      A single customer never receives more than one feedback survey within a 24-hour cycle, preventing communication fatigue.
+                      We only send surveys to customers after a conversation lasting longer than two minutes, keeping quick misdials or busy signals from sending blank requests.
+                    </p>
+                  </div>
+
+                  <div className="border border-border-soft p-3 rounded-[3px] bg-sidebar-bg/30 text-left">
+                    <strong className="font-bold text-[11.5px] text-text-charcoal flex items-center gap-1.5 font-sans animate-fade">
+                      <span className="w-1.5 h-1.5 bg-[#006644] rounded-full" />
+                      Once-a-Day Boundary
+                    </strong>
+                    <p className="text-[11px] text-text-muted mt-0.5 leading-relaxed">
+                      Customers are limited to a maximum of one request every 24 hours to protect their time and prevent duplicate notifications.
                     </p>
                   </div>
                 </div>
 
                 <div className="p-3 border border-status-attention-text/20 bg-status-attention-bg rounded-[3px] text-status-attention-text text-[11px] leading-relaxed text-left">
-                  <strong className="font-bold block mb-0.5">Supervisor Control</strong>
-                  Operations coordinators can easily verify performance data or clear team alert tags inside the <em className="font-semibold">Team Performance</em> board with a single click.
+                  <strong className="font-bold block mb-0.5">High-Quality, Respectful Loop</strong>
+                  Our safeguards filter out invalid leads and respect user rest cycles to keep survey indicators accurate without fatigue.
                 </div>
               </div>
             )}
@@ -200,8 +210,8 @@ export function SupportDrawer({ isOpen, onClose }: SupportDrawerProps) {
 
         </div>
 
-        {/* Footer actions pinned at the bottom - utilizing safe-area-inset for perfect layout on Pixel 9A / notch screens */}
-        <div className="border-t border-border-soft bg-canvas-bg px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] md:px-6 shrink-0 select-none">
+        {/* Footer actions pinned at the bottom - optimized top/bottom padding to sit neat on notch screens */}
+        <div className="border-t border-border-soft bg-canvas-bg px-4 py-3.5 md:px-6 shrink-0 select-none">
           <button
             type="button"
             onClick={onClose}
