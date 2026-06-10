@@ -7,19 +7,19 @@ export interface FAQItem {
 
 export const faqs: FAQItem[] = [
   {
-    q: "How does Advantage Software — Teams help representatives receive proper credit?",
-    a: "By linking physical handset extensions directly to active CRM profiles, any client interaction is auto-routed to the correct representative. Shift leads get dynamic live charts proving authentic project engagement, giving staff proof and credit for their external work."
+    q: "How does this platform help our team members?",
+    a: "It automatically connects call details directly to client profiles. This ensures reps receive instant, accurate credit for helping customers, completely removing the need for manual logs or reports."
   },
   {
-    q: "Why are some customer satisfaction surveys skipped?",
-    a: "Our quality standards limit surveys to meaningful call interactions. Calls under 2 minutes are skipped to filter out answering machines, quick drops, or misdials, and client handsets are capped at 1 survey per day to block duplication."
+    q: "How does the automatic customer survey work?",
+    a: "After a customer wraps up a helpful chat, they receive a simple feedback question. Their rating is instantly saved back to their history so supervisors can see team achievements and highlight success stories."
   },
   {
-    q: "What is the Focus Level metric and how is it used by Advantage Software — Teams?",
-    a: "Focus level analyzes representative activity. It is calculated by dividing logged system updates by duration. If updates per hour are lower than 40%, the system flags a 'Review' tag so supervisors can easily clear or verify them manually."
+    q: "Why are some calls kept out of the survey system?",
+    a: "We want to respect our customers' time. The system ignores very short calls under two minutes (like quick misdials or busy signals) and limits surveys to a maximum of one request per customer each day."
   },
   {
-    q: "How does the CRM database mapping synchronizer run?",
-    a: "Once a call meets compliance requirements, our SMS system dispatches the survey. When the client responds, results map directly back to their CRM profile timeline so no documentation is lost."
+    q: "What do the 'Review' status tags mean?",
+    a: "These flags highlight team members who might need quick assistance or setup checks. Supervisors can easily look over these records and clear the alert with a single click in the Team Performance board."
   }
 ];
