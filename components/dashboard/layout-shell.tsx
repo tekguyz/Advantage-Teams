@@ -23,7 +23,7 @@ export function LayoutShell({ children }: LayoutShellProps) {
 
   return (
     <div 
-      id="advantage-software-root" 
+      id="advantage-teams-root" 
       className="h-screen w-screen overflow-hidden flex bg-canvas-bg text-text-charcoal font-sans selection:bg-accent-blue/10 transition-colors duration-150 relative"
     >
       {/* Backdrop for mobile */}
@@ -53,7 +53,7 @@ export function LayoutShell({ children }: LayoutShellProps) {
         <div className="flex md:hidden h-[54px] w-full border-b border-border-soft items-center justify-between px-4 bg-canvas-bg shrink-0 sticky top-0 z-35">
           <div className="flex items-center gap-2.5 min-w-0">
             <BrandDiamondLogo className="w-5 h-5 shrink-0" />
-            <span className="font-bold text-text-charcoal text-[13.5px] tracking-tight truncate">Advantage Software — Teams</span>
+            <span className="font-bold text-text-charcoal text-[13.5px] tracking-tight truncate">Advantage Teams Demo</span>
           </div>
           <button
             type="button"
@@ -72,7 +72,7 @@ export function LayoutShell({ children }: LayoutShellProps) {
         {/* Clean Corporate Footer featuring TEKGUYZ */}
         <footer className="border-t border-border-soft/60 py-3.5 px-4 sm:px-6 lg:px-8 bg-sidebar-bg/15 text-text-muted text-[11px] flex flex-row items-center justify-between gap-4 select-none shrink-0 w-full overflow-hidden whitespace-nowrap">
           <div className="flex items-center min-w-0">
-            <span className="font-semibold text-text-charcoal truncate">Advantage Teams</span>
+            <span className="font-semibold text-text-charcoal truncate">Advantage Teams Demo</span>
           </div>
           <div className="flex items-center gap-1.5 shrink-0 text-text-muted select-none">
             <span className="text-[10.5px]">Engineered by</span>

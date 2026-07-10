@@ -14,7 +14,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://advantage-teams.vercel.app/'),
-  title: 'Advantage Software — Teams',
+  title: 'Advantage Teams Demo',
   description: 'Performance Analytics & Telemetry Workspace: Operations console bridging hardware telephony registers with Zoho CRM accounts.',
   icons: {
     icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230052cc'/%3E%3Cpath d='M50 16 L84 50 L50 84 L16 50 Z' fill='%23ffffff'/%3E%3Cpath d='M50 30 L70 50 L50 70 L30 50 Z' fill='%230052cc'/%3E%3Ccircle cx='50' cy='50' r='10' fill='%23fffae6'/%3E%3C/svg%3E",
@@ -22,19 +22,19 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Teams',
+    title: 'Advantage Teams Demo',
   },
   openGraph: {
-    title: 'Advantage Software — Teams',
+    title: 'Advantage Teams Demo',
     description: 'Performance Analytics & Telemetry Workspace bridging hardware telephony registers with Zoho CRM accounts.',
     url: 'https://advantage-teams.vercel.app/dashboard',
-    siteName: 'Advantage Software',
+    siteName: 'Advantage Teams',
     images: [
       {
         url: 'https://advantage-teams.vercel.app/api/og',
         width: 1200,
         height: 630,
-        alt: 'Advantage Software — Teams Operations Console',
+        alt: 'Advantage Teams Demo Operations Console',
       },
     ],
     locale: 'en_US',
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Advantage Software — Teams',
+    title: 'Advantage Teams Demo',
     description: 'Performance Analytics & Telemetry Workspace bridging hardware telephony registers with Zoho CRM accounts.',
     images: ['https://advantage-teams.vercel.app/api/og'],
   },

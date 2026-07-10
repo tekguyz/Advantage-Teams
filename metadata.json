@@ -1,5 +1,5 @@
 {
-  "name": "Advantage Software - Teams",
+  "name": "Advantage Teams Demo",
   "description": "The operational control center mapping hardware telephony logs to business contact records with integrated verification rules and carrier-grade anti-spam controllers.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

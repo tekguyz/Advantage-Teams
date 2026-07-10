@@ -38,11 +38,11 @@ export async function GET() {
             </div>
             
             <div style={{ fontSize: '76px', fontWeight: '800', color: '#172b4d', letterSpacing: '-0.03em', lineHeight: '1.1' }}>
-              Advantage Software
+              Advantage Teams
             </div>
             
             <div style={{ fontSize: '48px', fontWeight: '700', color: '#0052cc', marginTop: '6px', letterSpacing: '-0.02em' }}>
-              Teams Workspace
+              Demo Workspace
             </div>
             
             <div style={{ fontSize: '24px', color: '#44546f', marginTop: '30px', lineHeight: '1.5', maxWidth: '640px' }}>

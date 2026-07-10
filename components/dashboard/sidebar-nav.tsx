@@ -66,8 +66,8 @@ export function SidebarNav({ onOpenHelp, isCollapsed, onToggleCollapse, isMobile
           <BrandDiamondLogo className="w-5 h-5 shrink-0" />
           {showFullContext && (
             <div className="flex flex-col min-w-0 animate-fadeIn text-left">
-              <span className="font-bold text-text-charcoal text-[13.5px] tracking-tight leading-tight truncate">Advantage Software</span>
-              <span className="text-[9.5px] text-accent-blue leading-none font-bold tracking-wider uppercase mt-0.5">Teams</span>
+              <span className="font-bold text-text-charcoal text-[13.5px] tracking-tight leading-tight truncate">Advantage Teams</span>
+              <span className="text-[9.5px] text-accent-blue leading-none font-bold tracking-wider uppercase mt-0.5">Demo</span>
             </div>
           )}
         </div>
